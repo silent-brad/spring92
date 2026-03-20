@@ -1,6 +1,6 @@
 {
-  "name": "Spring200 Challenge",
-  "short_name": "Spring200",
+  "name": "Spring92 Challenge",
+  "short_name": "Spring92",
   "icons": [
     {
       "src": "/static/images/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#CFCC80",
-  "background_color": "#CFCC80",
+  "theme_color": "#fff3a5",
+  "background_color": "#ffffff",
   "display": "standalone"
 }
