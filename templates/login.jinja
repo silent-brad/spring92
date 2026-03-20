@@ -1,0 +1,70 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<article class="form-container">
+  <section>
+    <h1>Log In</h1>
+    <p>Welcome back to Spring200!</p>
+  </section>
+
+  {% if error_message.is_some() %}
+	<div class="error">
+	  {{error_message.get()}}
+	</div>
+  {% endif %}
+
+  {% if success_message.is_some() %}
+	<div class="success">
+	  {{success_message.get()}}
+	</div>
+  {% endif %}
+
+  <div id="message-container"></div>
+
+  <form method="post" action="/login" hx-post="/login" hx-target="#message-container" hx-swap="innerHTML">
+    <label for="email">
+      Email
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        {% if email.is_some() %}value="{{email.get()}}"{% endif %}
+        required
+        autofocus
+      >
+    </label>
+
+    <label for="password">
+      Password
+      <div class="password-field">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        >
+        <div class="password-toggle" onclick="togglePasswordVisibility('password')">
+          <span class="toggle-icon">
+            <svg width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+          </span>
+        </div>
+      </div>
+    </label>
+
+    <button type="submit">Log In</button>
+  </form>
+
+  <hr/>
+  <div class="text-center">
+    <p>
+      Don't have an account?
+      <a href="/signup">Sign up here</a>
+    </p>
+    <p>If you need to change your password, email <a href="mailto:brad@knightoffaith.systems">brad@knightoffaith.systems</a></p>
+  </div>
+</article>
+{% endblock %}

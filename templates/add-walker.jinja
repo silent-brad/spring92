@@ -1,0 +1,40 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}Add Walker{% endblock %}
+
+{% block content %}
+<article>
+  {% if session.get().is_family_session %}
+  <div class="welcome-section">
+    <h2>Your family account has been created successfully. Now let's create your first walker account.</h2>
+  </div>
+  {% endif %}
+
+  <div class="grid">
+    <div>
+      {% if session.get().is_family_session %}
+      <h2>Create Your Walker Account</h2>
+      <p>A walker account tracks your individual miles and progress. You can create multiple walker accounts for each family member.</p>
+      {% else %}
+      <h2>Create Another Walker Account</h2>
+      <p>A walker account tracks your individual miles and progress. You can create multiple walker accounts for each family member.</p>
+      {% endif %}
+      
+      <form hx-post="/create-walker" hx-target="#walker-response">
+        <div>
+          <label for="name">Walker Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your name" required maxlength="50" />
+          <small>This is the name that will appear on the leaderboard.</small>
+        </div>
+        
+        <button type="submit">Create Walker Account</button>
+      </form>
+      
+      <div id="walker-response"></div>
+      
+      <hr>
+      
+      <p><small>After creating your walker account, you'll be taken to your dashboard where you can start logging miles!</small></p>
+    </div>
+  </div>
+</article>

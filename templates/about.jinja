@@ -1,0 +1,56 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<article>
+	<section>
+		<h1>About Spring200</h1>
+		<p>The challenge that keeps you moving through spring</p>
+	</section>
+	
+	<section>
+		<h2>What is Spring200?</h2>
+		<p>
+			Spring200 is a fitness challenge designed to help you stay active during the spring months.
+			The goal is simple: walk or run 200 miles (one for every day of spring) between the start of spring (March 20th) and the end of the challenge period.
+		</p>
+		
+    <!--<blockquote>
+			"Above all, do not lose your desire to walk. Everyday, I walk myself into a state of well-being 
+			and walk away from every illness. I have walked myself into my best thoughts, and I know of no 
+			thought so burdensome that one cannot walk away from it."
+			<cite>Søren Kierkegaard</cite>
+		</blockquote>-->
+	</section>
+	
+	<section>
+		<h2>How It Works</h2>
+		<ol>
+			<li><strong>Sign Up:</strong> Get an invitation code and create your account</li>
+			<li><strong>Log Miles:</strong> Track your daily walks and runs</li>
+			<li><strong>Stay Motivated:</strong> Watch your progress and compete on the leaderboard</li>
+			<li><strong>Reach 200 miles:</strong> Complete the challenge by hitting 200 miles!</li>
+		</ol>
+	</section>
+	
+	<section>
+		<h2>Challenge Rules</h2>
+		<ul>
+			<li>Any outdoor walking or running counts toward your total</li>
+			<li>Indoor activities like treadmills count too</li>
+			<li>Log your miles honestly</li>
+			<li>Support and encourage your fellow peripatetics</li>
+		</ul>
+	</section>
+	
+  <hr/>
+	<div style="text-align: center; margin-top: 3rem;">
+		{% if walker_id.isNone() %}
+			<a href="/signup" role="button">Join the Challenge</a>
+		{% else %}
+			<a href="/log" role="button">Log Your Miles</a>
+		{% endif %}
+	</div>
+</article>
+{% endblock %}

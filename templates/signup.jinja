@@ -1,0 +1,122 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<article class="form-container">
+  <section>
+    <h1>Sign Up</h1>
+    <p>Join the Spring200 challenge!</p>
+  </section>
+  
+	{% if error_message.is_some() %}
+	  <div class="error">
+      {{error_message.get()}}
+	  </div>
+	{% endif %}
+	
+	{% if success_message.is_some() %}
+	  <div class="success">
+      {{success_message.get()}}
+	  </div>
+	{% endif %}
+
+  <div id="message-container"></div>
+  
+  <form id="family-form" method="post" action="/signup"
+		hx-post="/signup"
+		hx-target="#message-container"
+		hx-swap="innerHTML">
+    <label for="family-passkey">
+      Invitation Code
+      <input
+        type="text"
+        id="family-passkey"
+        name="passkey"
+        placeholder="Enter invitation code"
+        required
+      />
+      <small>You need a valid invitation code to join.</small>
+    </label>
+    
+    <br/>
+
+    <label for="family-email">
+      Email
+      <input
+        type="email"
+        id="family-email"
+        name="email"
+        placeholder="Enter family account email"
+        required
+      />
+    </label>
+    
+    <label for="family-password">
+      Password
+      <div class="password-field">
+        <input
+          type="password"
+          id="family-password"
+          name="password"
+          placeholder="Create a password"
+          minlength="8"
+          required
+        />
+        <div class="password-toggle" onclick="togglePasswordVisibility('family-password')">
+          <span class="toggle-icon">
+            <svg width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+          </span>
+        </div>
+      </div>
+      <small>Password must be at least 8 characters long.</small>
+    </label>
+    
+    <br/>
+
+    <label for="family-confirm_password">
+      Confirm Password
+      <div class="password-field">
+        <input
+          type="password"
+          id="family-confirm_password"
+          name="confirm_password"
+          placeholder="Confirm your password"
+          minlength="8"
+          required
+        />
+        <div class="password-toggle" onclick="togglePasswordVisibility('family-confirm_password')">
+          <span class="toggle-icon">
+            <svg width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+          </span>
+        </div>
+      </div>
+    </label>
+    
+    <button type="submit">Create Family Account</button>
+  </form>
+  
+  <hr/>
+  <div class="text-center">
+    <p>
+      Already have an account?
+      <a href="/login">Log in here</a>
+    </p>
+  </div>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('family-confirm_password').addEventListener('input', function() {
+	const password = document.getElementById('family-password').value;
+	const confirm_password = this.value;
+	
+	if (password !== confirm_password) {
+	  this.setCustomValidity('Passwords do not match');
+	} else {
+	  this.setCustomValidity('');
+	}
+  });
+</script>
+{% endblock %}

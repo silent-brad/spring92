@@ -1,0 +1,27 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}Posts{% endblock %}
+
+{% block content %}
+<article>
+	<section>
+		<h1>Community Posts</h1>
+		<p>Share your journey with pictures and text!</p>
+	</section>
+
+	<!-- Create Post Form -->
+	{% importnimja "partials/_wysiwyg_editor.jinja" %}
+
+	<!-- Post Feed -->
+	<div style="background-color: var(--color-surface); padding: 1.5rem; border-radius: 0.375rem;">
+		<h3>Recent Posts</h3>
+		<div id="post-feed" hx-get="/api/post-feed" hx-trigger="load" hx-swap="innerHTML">
+			<p>Loading posts...</p>
+		</div>
+	</div>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+{% importnimja "partials/_wysiwyg_scripts.jinja" %}
+{% endblock %}

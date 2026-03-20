@@ -1,0 +1,180 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<article>
+	<section>
+		<h1>Settings</h1>
+		<p>Customize your Spring200 profile</p>
+	</section>
+	
+  <div id="settings-messages">
+	{% if error_message.is_some() %}
+		<div class="error" style="
+			background-color: var(--error-oklch-500);
+      color: var(--neutral-oklch-50);
+      padding: 1rem;
+      border-radius: 0.375rem;
+			margin-bottom: 1rem;
+		">
+			{{error_message.get()}}
+		</div>
+	{% endif %}
+	
+	{% if success_message.is_some() %}
+		<div class="success" style="
+			background-color: var(--success-oklch-500);
+			color: var(--neutral-oklch-50);
+			padding: 1rem;
+			border-radius: 0.375rem;
+			margin-bottom: 1rem;
+		">
+			{{success_message.get()}}
+		</div>
+	{% endif %}
+  </div>
+	
+	<form method="post" action="/settings" enctype="multipart/form-data"
+		hx-post="/settings"
+		hx-target="#settings-messages"
+		hx-swap="innerHTML">
+		<div style="text-align: center; margin-bottom: 2rem;">
+			<div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 1rem 0;">
+				{% if walker.is_some() %}
+          {% let walker = walker.get() %}
+          {% let name = walker.name %}
+          {% let avatar_filename = walker.avatar_filename %}
+          {% importnimja "partials/_walker_avatar.jinja" %}
+				{% endif %}
+			</div>
+		</div>
+		
+		<label for="avatar">
+			Change Profile Picture
+			<input
+				type="file"
+				id="avatar"
+				name="avatar"
+				accept="image/*"
+			>
+			<small>Upload a custom profile picture, or leave empty to use avatar with your initials.</small>
+		</label>
+		
+		<label for="name">
+			Change Name
+			<input
+				type="text"
+				id="name"
+				name="name"
+				placeholder="Enter your name"
+				{% if walker.is_some() %}value="{{walker.get().name}}"{% endif %}
+				required
+			>
+		</label>
+		
+		<fieldset>
+			<legend>Change Password (for family account)</legend>
+			
+			<label for="current_password">
+				Current Password
+				<div class="password-field">
+					<input
+						type="password"
+						id="current_password"
+						name="current_password"
+						placeholder="Enter current password"
+					>
+					<div class="password-toggle" onclick="togglePasswordVisibility('current_password')">
+            <span class="toggle-icon">
+              <svg width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+            </span>
+					</div>
+				</div>
+				<small>Required only if changing password.</small>
+			</label>
+			
+			<label for="new_password">
+				New Password
+				<div class="password-field">
+					<input
+						type="password"
+						id="new_password"
+						name="new_password"
+						placeholder="Enter new password"
+						minlength="8"
+					>
+					<div class="password-toggle" onclick="togglePasswordVisibility('new_password')">
+            <span class="toggle-icon">
+              <svg width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+            </span>
+					</div>
+				</div>
+				<small>Leave empty to keep current password.</small>
+			</label>
+			
+			<label for="confirm_new_password">
+				Confirm New Password
+				<div class="password-field">
+					<input
+						type="password"
+						id="confirm_new_password"
+						name="confirm_new_password"
+						placeholder="Confirm new password"
+						minlength="8"
+					>
+					<div class="password-toggle" onclick="togglePasswordVisibility('confirm_new_password')">
+            <span class="toggle-icon">
+              <svg width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed-icon lucide-eye-closed"><path d="m15 18-.722-3.25"/><path d="M2 8a10.645 10.645 0 0 0 20 0"/><path d="m20 15-1.726-2.05"/><path d="m4 15 1.726-2.05"/><path d="m9 18 .722-3.25"/></svg>
+            </span>
+					</div>
+				</div>
+			</label>
+		</fieldset>
+		
+		<button type="submit">Save Changes</button>
+	</form>
+	
+	<section style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--neutral-oklch-300);">
+		<h2 style="color: var(--error-oklch-500); margin-bottom: 1rem;">Danger Zone</h2>
+		<p style="margin-bottom: 1rem; color: var(--neutral-oklch-600);">
+			Once you delete your walker account, there is no going back. Please be certain.
+		</p>
+		<a href="/delete-walker" style="
+			background-color: var(--error-oklch-500);
+			color: var(--neutral-oklch-50);
+			padding: 0.75rem 1.5rem;
+			text-decoration: none;
+			border-radius: 0.375rem;
+			display: inline-block;
+			font-weight: 500;
+		">Delete Walker Account</a>
+	</section>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Password confirmation validation
+document.getElementById('confirm_new_password').addEventListener('input', function() {
+	const newPassword = document.getElementById('new_password').value;
+	const confirmPassword = this.value;
+	
+	if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+		this.setCustomValidity('Passwords do not match');
+	} else {
+		this.setCustomValidity('');
+	}
+});
+
+// Require current password if changing password
+document.getElementById('new_password').addEventListener('input', function() {
+	const currentPasswordField = document.getElementById('current_password');
+	if (this.value) {
+		currentPasswordField.required = true;
+	} else {
+		currentPasswordField.required = false;
+	}
+});
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "partials/_master.jinja" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="landing"></div>
+
+<section class="landing-content">
+  <h1>Only one <i>receives</i> the <b>prize</b>!</h1>
+  <blockquote>
+    "Know ye not that they which run in a race run all, but one receiveth the prize? So run, that ye may obtain."
+    <cite>1 Corinthians 9:24</cite>
+  </blockquote>
+  <br/>
+  
+  <div>
+    {% if session.is_some() %}
+    <a href="/dashboard" role="button">Dashboard</a>
+    <a href="/leaderboard" role="button">Leaderboard</a>
+    {% else %}
+    <a href="/signup" role="button">Sign up</a>
+    <a href="/login" role="button" class="secondary">Log in</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
