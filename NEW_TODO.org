@@ -10,7 +10,8 @@
   - Perfect color scheme.
   - Convert to PNG
 
-* TODO Design hero image
+* DONE Design hero image
+  CLOSED: [2026-03-21 Sat 09:36]
   Walking path with field of daffodil
 * DONE Fix time
 * DONE Add edit button to mile tracker
