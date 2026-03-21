@@ -175,7 +175,7 @@ function loadDashboardData() {
 			
 			// Fill all days from Mar 20th to today
 			for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
-				const dateStr = d.toISOString().split('T')[0];
+				const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 				allDates.push(dateStr);
 				allMiles.push(dataMap.get(dateStr) || 0);
 			}

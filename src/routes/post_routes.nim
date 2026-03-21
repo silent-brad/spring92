@@ -131,31 +131,31 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
   of "/log":
     if session.is_none:
       status = Http401
-      response_body = """<p style="color: red;">You must be logged in to log miles</p>"""
+      response_body = """<p style="color: var(--error-oklch-500);">You must be logged in to log miles</p>"""
     else:
       let miles_str = form_data.get_or_default("miles", "")
       try:
         let miles = parse_float(miles_str)
         if miles <= 0:
-          response_body = """<p style="color: red;">Miles must be positive</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">Miles must be positive</p>"""
         elif miles > 50:
-          response_body = """<p style="color: red;">Miles cannot exceed 50 per entry</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">Miles cannot exceed 50 per entry</p>"""
         else:
           log_miles(db_conn, session.get().walker_id, miles)
-          response_body = &"""<p style="color: green;">Logged {miles:.1f} miles successfully!</p>"""
+          response_body = &"""<p style="color: var(--success-oklch-500);">Logged {miles:.1f} miles successfully!</p>"""
       except:
-        response_body = """<p style="color: red;">Invalid miles value</p>"""
+        response_body = """<p style="color: var(--error-oklch-500);">Invalid miles value</p>"""
 
   of "/post":
     if session.is_none:
       status = Http401
-      response_body = """<p style="color: red;">You must be logged in to create posts</p>"""
+      response_body = """<p style="color: var(--error-oklch-500);">You must be logged in to create posts</p>"""
     else:
       # Parse multipart form data for file upload
       let multipart_data = await parse_multipart(req)
       
       if multipart_data.error != "":
-        response_body = &"""<p style="color: red;">Error parsing form data: {multipart_data.error}</p>"""
+        response_body = &"""<p style="color: var(--error-oklch-500);">Error parsing form data: {multipart_data.error}</p>"""
       else:
         let text_content = sanitize_html(multipart_data.fields.getOrDefault("text_content", "").strip())
         var image_filename = ""
@@ -171,26 +171,26 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
             remove_file(upload_path)
         
         if text_content.strip() == "" and image_filename == "":
-          response_body = """<p style="color: red;">Please provide text content or an image</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">Please provide text content or an image</p>"""
         else:
           try:
             discard create_post(db_conn, session.get().walker_id, text_content, image_filename)
             headers = new_http_headers([("HX-Redirect", "/posts")])
-            response_body = """<p style="color: green;">Post created successfully!</p>"""
+            response_body = """<p style="color: var(--success-oklch-500);">Post created successfully!</p>"""
           except Exception as e:
             echo "Error creating post: ", e.msg
-            response_body = """<p style="color: red;">Error creating post</p>"""
+            response_body = """<p style="color: var(--error-oklch-500);">Error creating post</p>"""
 
   of "/settings":
     if session.is_none:
       status = Http401
-      response_body = """<p style="color: red;">You must be logged in to update settings</p>"""
+      response_body = """<p style="color: var(--error-oklch-500);">You must be logged in to update settings</p>"""
     else:
       # Parse multipart form data for file upload
       let multipart_data = await parse_multipart(req)
       
       if multipart_data.error != "":
-        response_body = &"""<p style="color: red;">Error parsing form data: {multipart_data.error}</p>"""
+        response_body = &"""<p style="color: var(--error-oklch-500);">Error parsing form data: {multipart_data.error}</p>"""
       else:
         # Extract form fields with validation
         let name = multipart_data.fields.get_or_default("name", "").strip()
@@ -199,13 +199,13 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
         let confirm_password = multipart_data.fields.get_or_default("confirm_new_password", "").strip()
         
         if name == "":
-          response_body = """<p style="color: red;">Name is required</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">Name is required</p>"""
         elif not validate_name(name):
-          response_body = """<p style="color: red;">Invalid name format</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">Invalid name format</p>"""
         else:
           let walker_opt = get_walker_by_id(db_conn, session.get().walker_id)
           if walker_opt.is_none:
-            response_body = """<p style="color: red;">Walker not found</p>"""
+            response_body = """<p style="color: var(--error-oklch-500);">Walker not found</p>"""
           else:
             let walker = walker_opt.get()
             var success = true
@@ -287,14 +287,14 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
             
             if success:
               headers = new_http_headers([("HX-Redirect", "/dashboard?success=settings")])
-              response_body = &"<p style=\"color: green;\">Settings updated successfully!</p>"
+              response_body = &"<p style=\"color: var(--success-oklch-500);\">Settings updated successfully!</p>"
             else:
-              response_body = &"""<p style="color: red;">{error_msg}</p>"""
+              response_body = &"""<p style="color: var(--error-oklch-500);">{error_msg}</p>"""
 
   of "/edit-miles":
     if session.is_none or session.get().is_family_session:
       status = Http401
-      response_body = """<p style="color: red;">You must be logged in to edit miles</p>"""
+      response_body = """<p style="color: var(--error-oklch-500);">You must be logged in to edit miles</p>"""
     else:
       let entry_id_str = form_data.get_or_default("entry_id", "")
       let miles_str = form_data.get_or_default("miles", "")
@@ -303,23 +303,23 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
         let entry = get_mile_entry_by_id(db_conn, entry_id)
         if entry.walker_id != session.get().walker_id:
           status = Http403
-          response_body = """<p style="color: red;">You can only edit your own entries</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">You can only edit your own entries</p>"""
         else:
           let miles = parse_float(miles_str)
           if miles <= 0:
-            response_body = """<p style="color: red;">Miles must be positive</p>"""
+            response_body = """<p style="color: var(--error-oklch-500);">Miles must be positive</p>"""
           elif miles > 50:
-            response_body = """<p style="color: red;">Miles cannot exceed 50 per entry</p>"""
+            response_body = """<p style="color: var(--error-oklch-500);">Miles cannot exceed 50 per entry</p>"""
           else:
             update_mile_entry(db_conn, entry_id, miles)
-            response_body = &"""<p style="color: green;">Updated to {miles:.1f} miles successfully!</p>"""
+            response_body = &"""<p style="color: var(--success-oklch-500);">Updated to {miles:.1f} miles successfully!</p>"""
       except:
-        response_body = """<p style="color: red;">Invalid entry</p>"""
+        response_body = """<p style="color: var(--error-oklch-500);">Invalid entry</p>"""
 
   of "/delete-miles":
     if session.is_none or session.get().is_family_session:
       status = Http401
-      response_body = """<p style="color: red;">You must be logged in to delete miles</p>"""
+      response_body = """<p style="color: var(--error-oklch-500);">You must be logged in to delete miles</p>"""
     else:
       let entry_id_str = form_data.get_or_default("entry_id", "")
       try:
@@ -327,17 +327,17 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
         let entry = get_mile_entry_by_id(db_conn, entry_id)
         if entry.walker_id != session.get().walker_id:
           status = Http403
-          response_body = """<p style="color: red;">You can only delete your own entries</p>"""
+          response_body = """<p style="color: var(--error-oklch-500);">You can only delete your own entries</p>"""
         else:
           delete_mile_entry(db_conn, entry_id)
-          response_body = """<p style="color: green;">Entry deleted successfully!</p>"""
+          response_body = """<p style="color: var(--success-oklch-500);">Entry deleted successfully!</p>"""
       except:
-        response_body = """<p style="color: red;">Invalid entry</p>"""
+        response_body = """<p style="color: var(--error-oklch-500);">Invalid entry</p>"""
 
   of "/delete-walker":
     if session.is_none:
       status = Http401
-      response_body = """<p style="color: red;">You must be logged in to delete your account</p>"""
+      response_body = """<p style="color: var(--error-oklch-500);">You must be logged in to delete your account</p>"""
     else:
       try:
         delete_walker_account(db_conn, session.get().walker_id)
@@ -346,10 +346,10 @@ proc handle_post_routes*(req: Request, session: Option[Session], db_conn: DbConn
           ("Set-Cookie", "session_id=; HttpOnly; Path=/; Max-Age=0"),
           ("HX-Redirect", "/?success=account-deleted")
         ])
-        response_body = """<p style="color: green;">Account deleted successfully!</p>"""
+        response_body = """<p style="color: var(--success-oklch-500);">Account deleted successfully!</p>"""
       except Exception as e:
         echo "Error deleting walker: ", e.msg
-        response_body = """<p style="color: red;">Error deleting account</p>"""
+        response_body = """<p style="color: var(--error-oklch-500);">Error deleting account</p>"""
 
   else:
     status = Http404
