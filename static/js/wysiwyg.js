@@ -354,9 +354,20 @@ function deletePost(postId) {
 	});
 }
 
+var originalPosts = {};
+
+function cancelEditPost(postId) {
+	var card = document.getElementById('post-card-' + postId);
+	if (!card || !originalPosts[postId]) return;
+	card.innerHTML = originalPosts[postId];
+	delete originalPosts[postId];
+}
+
 function editPost(postId) {
 	var card = document.getElementById('post-card-' + postId);
 	if (!card) return;
+
+	originalPosts[postId] = card.innerHTML;
 
 	var textEl = card.querySelector('.post-text-content');
 	var imageEl = card.querySelector('.post-image img');
@@ -395,7 +406,8 @@ function editPost(postId) {
 		'<input type="file" id="edit-image-' + postId + '" accept="image/*">' +
 		'</label>' +
 		'<div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">' +
-		'<button type="button" class="secondary outline" style="padding: 0.25rem 0.75rem; color: var(--neutral-oklch-50);" onclick="window.location.reload()">Cancel</button>' +
+		'<button type="button" class="secondary outline" style="padding: 0.25rem 0.75rem;" onclick="cancelEditPost(' + postId + ')">Cancel</button>' +
+		'<button type="button" class="secondary outline delete" style="padding: 0.25rem 0.75rem;" onclick="deletePost(' + postId + ')">Delete</button>' +
 		'<button type="button" style="padding: 0.25rem 0.75rem;" onclick="submitEditPost(' + postId + ')">Save</button>' +
 		'</div></form>';
 

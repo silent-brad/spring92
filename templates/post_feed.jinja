@@ -10,7 +10,6 @@
 			{% if session.is_some() and post.walker_id == session.get().walker_id %}
 				<div class="post-actions">
 					<button class="secondary outline post-action-btn" onclick="editPost({{post.id}})">Edit</button>
-					<button class="secondary outline post-action-btn delete" onclick="deletePost({{post.id}})">Delete</button>
 				</div>
 			{% endif %}
 		</div>
