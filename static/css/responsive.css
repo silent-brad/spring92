@@ -40,9 +40,26 @@
     align-self: center;
   }
 
+  .dropdown-menu {
+    right: 0;
+    left: auto;
+    min-width: 180px;
+    max-width: calc(100vw - 2 * var(--space-sm));
+    z-index: 10001;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .dropdown-menu a {
+    padding: var(--space-md);
+    font-size: var(--font-size-md);
+  }
+
   .hamburger-toggle {
     display: flex;
     align-self: center;
+    position: relative;
+    z-index: 10000;
   }
 
   .hamburger-checkbox {
@@ -76,11 +93,6 @@
 
   .hamburger-checkbox:checked ~ .hamburger-toggle .hamburger-line:nth-child(3) {
     transform: rotate(-45deg) translate(7px, -6px);
-  }
-
-  .hamburger-toggle {
-    position: relative;
-    z-index: 10000;
   }
 
   .hamburger-line {
@@ -141,7 +153,8 @@
     grid-template-columns: 1fr !important;
   }
 
-  .container {
+  .container,
+  .nav-container {
     padding: 0 var(--space-sm);
   }
 
@@ -150,7 +163,6 @@
   }
 
   .form-container {
-    margin: var(--space-md) auto;
     padding: var(--space-md);
   }
 
@@ -169,6 +181,18 @@
     display: block;
     white-space: nowrap;
   }
+
+  .landing {
+    height: calc(100vh - 6rem - 60px);
+  }
+
+  .landing-content {
+    height: calc(100vh - 6rem - 60px);
+  }
+
+  .landing-content h1 {
+    font-size: var(--font-size-2xl);
+  }
 }
 
 @media (max-width: 480px) {
@@ -186,7 +210,8 @@
     font-size: 16px;
   }
 
-  .container {
+  .container,
+  .nav-container {
     padding: 0 var(--space-xs);
   }
 
@@ -197,41 +222,22 @@
   nav a {
     border-radius: var(--radius-sm);
   }
+
+  .landing {
+    height: calc(100vh - 6rem - 50px);
+  }
+
+  .landing-content {
+    height: calc(100vh - 6rem - 50px);
+  }
+
+  .landing-content h1 {
+    font-size: var(--font-size-xl);
+  }
 }
 
 @media (min-width: 1024px) {
-  .container {
-    max-width: min(1400px, 100vw - 2rem);
-  }
-}
-
-/* Responsive adjustments for smaller viewports */
-@media (max-width: 768px) {
-  .landing {
-    background-position: center center;
-    background-size: cover;
-    height: calc(100vh - 6rem - 60px);
-  }
-
-  .landing-content {
-    height: calc(100vh - 6rem - 60px);
-  }
-
-  .landing-content h1 {
-    font-size: 2.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .landing {
-    height: calc(100vh - 6rem - 50px);
-  }
-
-  .landing-content {
-    height: calc(100vh - 6rem - 50px);
-  }
-
-  .landing-content h1 {
-    font-size: 2rem;
+  .nav-container {
+    max-width: min(1200px, 100% - 2rem);
   }
 }

@@ -4,6 +4,16 @@
 
 {% block content %}
 <article class="dashboard-container">
+
+	<div class="dashboard-greeting">
+		<img
+			class="greeting-avatar"
+			src="/avatars/{{ session.get().avatar_filename }}"
+			alt="{{ session.get().name }} Avatar"
+		/>
+		<span class="greeting-name">{{ session.get().name }}</span>
+	</div>
+
 	<section>
 		<h1>Dashboard</h1>
 		<p>Track your progress towards the Spring92 goal!</p>
@@ -28,12 +38,12 @@
 			<h3 class="numbers progress-num">{{fmtMiles(current_total.get())}}</h3>
 			<p class="numbers progress-num-label">out of 92 miles</p>
 			{% if progress_percent.is_some() %}
-			{% let progress_percent = progress_percent.get() %}
-      {% importnimja "partials/_progress_bar.jinja" %}
-			<small class="numbers progress-num-percent">
-				{{progress_percent.int}}% complete
-			</small>
-		{% endif %}
+				{% let progress_percent = progress_percent.get() %}
+				{% importnimja "partials/_progress_bar.jinja" %}
+				<small class="numbers progress-num-percent">
+					{{progress_percent.int}}% complete
+				</small>
+			{% endif %}
 		</div>
 	{% endif %}
 	

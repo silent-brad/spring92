@@ -71,8 +71,6 @@ textarea::placeholder {
 
 /* Form container */
 .form-container {
-  max-width: 500px;
-  margin: 0 auto;
   padding: var(--space-lg);
   background-color: var(--color-surface);
   border-radius: var(--radius-lg);

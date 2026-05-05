@@ -32,7 +32,7 @@
   CLOSED: [2026-03-21 Sat 10:24]
 * DONE Make images on the leaderboard and posts page load faster
 * DONE Make password on mobile store cookies longer
-* TODO Make posts sizing fit on mobile and bigger on desktop
+* TODO Fix the layouts
 * DONE Make dashboard load all walker data and load the last 10 mile entries and have a show more button
   CLOSED: [2026-05-04 Mon 17:34]
 * TODO Make posts have edit button which changes to save, delete and cancel buttons (with delete button popup)

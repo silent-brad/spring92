@@ -35,12 +35,32 @@
   margin-top: 3rem;
 }
 
-/* Dashboard page */
-.dashboard-container {
-  max-width: 800px;
-  margin: 0 auto;
+/* Dashboard greeting */
+.dashboard-greeting {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: var(--space-lg);
 }
 
+.greeting-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.greeting-name {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  color: var(--color-text);
+  text-align: center;
+}
+
+/* Progress overview */
 .progress-overview {
   margin-bottom: 2rem;
   text-align: center;
@@ -49,19 +69,25 @@
   border-radius: 0.375rem;
 }
 
+.progress-overview > * {
+  text-align: center;
+  max-width: none;
+  width: 100%;
+}
+
 .progress-num {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: var(--color-primary);
-  margin: 0;
+  margin: 0 0 var(--space-sm) 0;
 }
 
 .progress-num-label {
-  margin: 0;
+  margin: 0 0 var(--space-sm) 0;
 }
 
 .progress-num-percent {
   color: var(--color-text-muted);
-  margin-top: 0.5rem;
+  margin: var(--space-sm) 0 0 0;
   display: block;
 }
 

@@ -139,7 +139,8 @@ a svg {
 
 /* Content sections */
 article {
-  margin: var(--space-xl) 0 !important;
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-xl);
 }
 
 article,
@@ -176,6 +177,13 @@ img {
 
 /* Container for layout */
 .container {
+  max-width: min(800px, 100% - 2rem);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--space-md);
+}
+
+.nav-container {
   max-width: min(1200px, 100% - 2rem);
   margin: 0 auto;
   padding: 0 var(--space-md);
