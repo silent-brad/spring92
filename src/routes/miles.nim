@@ -7,13 +7,20 @@ import ../types, ../templates, ../utils
 proc dashboard_page*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
   if session.is_none: return
-  let total = get_user_total_miles(db_conn, session.get().walker_id)
+  let wid = session.get().walker_id
+  let total = get_user_total_miles(db_conn, wid)
   let pct = min(total / 92.0 * 100.0, 100.0)
   var msg = none(string)
   if "success=signup" in ctx.request.query: msg = some("Account created successfully! Welcome to Spring92!")
   elif "success=login" in ctx.request.query: msg = some("Login successful! Welcome back to Spring92!")
+  const ps = 10
+  let recent = get_user_recent_entries(db_conn, wid, ps + 1, 0)
+  let has_more_entries = recent.len > ps
+  let entries = if has_more_entries: recent[0 ..< ps] else: recent
+  let entries_html = render_mile_entries_table(entries, has_more = has_more_entries, next_page = 2)
   html_resp(ctx, render_template("dashboard.jinja", session, success_message = msg,
-            current_total = some(total), progress_percent = some(pct)))
+            current_total = some(total), progress_percent = some(pct),
+            entries_html = entries_html))
 
 proc log_page*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
@@ -110,11 +117,7 @@ proc api_user_miles_entries*(ctx: Context) {.async.} = gc_safe:
   except: discard
   let offset = (page - 1) * ps
   let wid = session.get().walker_id
-  let total = get_user_entry_count(db_conn, wid)
   let recent = get_user_recent_entries(db_conn, wid, ps + 1, offset)
   let has_more = recent.len > ps
   let display = if has_more: recent[0 ..< ps] else: recent
-  var entries = new_j_array()
-  for e in display:
-    entries.add(%*{"id": e.id, "date": format_date_with_ordinal(e.logged_at), "miles": e.miles})
-  json_resp(ctx, %*{"entries": entries, "has_more": has_more, "next_page": page + 1, "total": total})
+  html_resp(ctx, render_mile_entries_table(display, has_more = has_more, next_page = page + 1))

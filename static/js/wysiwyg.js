@@ -1,7 +1,18 @@
 // WYSIWYG Editor Scripts
 
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize on page load, boosted navigation, or if script loads after DOM is ready
+if (document.getElementById('text_content_editor')) {
 	initWysiwygEditor();
+} else {
+	document.addEventListener('DOMContentLoaded', function() {
+		initWysiwygEditor();
+	});
+}
+
+document.body.addEventListener('htmx:afterSettle', function(event) {
+	if (event.detail.elt.querySelector && event.detail.elt.querySelector('#text_content_editor')) {
+		initWysiwygEditor();
+	}
 });
 
 function initWysiwygEditor() {
@@ -157,7 +168,9 @@ function setupPlaceholder() {
 }
 
 function injectEditorStyles() {
+	if (document.getElementById('wysiwyg-editor-styles')) return;
 	var style = document.createElement('style');
+	style.id = 'wysiwyg-editor-styles';
 	style.textContent =
 		'#text_content_editor:empty:before,' +
 		'[id^="edit-editor-"]:empty:before {' +
@@ -215,6 +228,8 @@ function injectEditorStyles() {
 }
 
 function setupPostResponseHandlers() {
+	if (window._wysiwygPostHandlerBound) return;
+	window._wysiwygPostHandlerBound = true;
 	document.addEventListener('htmx:afterSwap', function(event) {
 		if (event.detail.target.id === 'post-response') {
 			var responseDiv = event.detail.target;

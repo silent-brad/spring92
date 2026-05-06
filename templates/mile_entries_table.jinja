@@ -1,0 +1,22 @@
+{% for entry in entries %}
+	<tr id="entry-row-{{entry.id}}">
+		<td>{{entry.logged_at.format_date_with_ordinal()}}</td>
+		<td class="miles-display-{{entry.id}}">{{entry.miles}}</td>
+		<td class="entry-actions">
+			<button class="secondary outline edit-btn" onclick="editMiles({{entry.id}}, {{entry.miles}})">Edit</button>
+		</td>
+	</tr>
+{% endfor %}
+{% if has_more %}
+	<tr id="load-more-entries"
+		hx-get="/api/user-miles-entries?page={{next_page}}"
+		hx-trigger="click"
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-select="unset"
+	>
+		<td colspan="3">
+			<button class="btn load-more-btn">Load More</button>
+		</td>
+	</tr>
+{% endif %}

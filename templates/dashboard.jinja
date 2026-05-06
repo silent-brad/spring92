@@ -51,7 +51,7 @@
 		<!-- Log Miles Form -->
 		<div class="dashboard-card">
 			<h3>Log Miles</h3>
-			<form method="post" action="/log" hx-post="/log" hx-target="#log-response" hx-swap="innerHTML">
+			<form method="post" action="/log" hx-post="/log" hx-target="#log-response" hx-swap="innerHTML" hx-select="unset">
 				<label for="miles">
 					Miles
 					<input
@@ -91,9 +91,23 @@
 	<div class="activity-container">
 		<h3>Recent Activity</h3>
 		<div id="daily-miles-list" class="numbers">
-			<p>Loading daily miles...</p>
+			{% if entries_html.len() > 0 %}
+				<table>
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Miles</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="entries-tbody">
+						{{entries_html}}
+					</tbody>
+				</table>
+			{% else %}
+				<p>No miles logged yet. Log your first miles above!</p>
+			{% endif %}
 		</div>
-		<div id="entries-load-more"></div>
 		<div id="edit-response"></div>
 	</div>
 </article>
@@ -102,6 +116,7 @@
 {% block extra_js %}
 <script src="/static/js/chart.js"></script>
 <script>
+(function() {
 
 function incrementMiles() {
 	const input = document.getElementById('miles');
@@ -116,6 +131,9 @@ function decrementMiles() {
 		input.value = (currentValue - 0.5).toFixed(1);
 	}
 }
+
+window.incrementMiles = incrementMiles;
+window.decrementMiles = decrementMiles;
 
 // Chart setup
 const ctx = document.getElementById('milesChart').getContext('2d');
@@ -153,9 +171,6 @@ const milesChart = new Chart(ctx, {
 	},
 });
 
-let currentEntryPage = 1;
-let hasMoreEntries = false;
-
 function loadChartData() {
 	fetch('/api/user-miles-data')
 		.then(response => response.json())
@@ -169,57 +184,6 @@ function loadChartData() {
 		.catch(error => {
 			console.error('Error loading chart data:', error);
 		});
-}
-
-function loadEntries(page, append) {
-	fetch('/api/user-miles-entries?page=' + page)
-		.then(response => response.json())
-		.then(data => {
-			const listContainer = document.getElementById('daily-miles-list');
-			const loadMoreContainer = document.getElementById('entries-load-more');
-
-			if (!append) {
-				if (data.total === 0) {
-					listContainer.innerHTML = '<p>No miles logged yet. Log your first miles above!</p>';
-					loadMoreContainer.innerHTML = '';
-					return;
-				}
-				listContainer.innerHTML = '<table><thead><tr><th>Date</th><th>Miles</th><th></th></tr></thead><tbody id="entries-tbody"></tbody></table>';
-			}
-
-			const tbody = document.getElementById('entries-tbody');
-			if (data.entries && data.entries.length > 0) {
-				data.entries.forEach(entry => {
-					const tr = document.createElement('tr');
-					tr.id = 'entry-row-' + entry.id;
-					tr.innerHTML = `<td>${entry.date}</td>
-						<td class="miles-display-${entry.id}">${entry.miles}</td>
-						<td class="entry-actions">
-							<button class="secondary outline edit-btn" onclick="editMiles(${entry.id}, ${entry.miles})">Edit</button>
-							</td>`;
-					tbody.appendChild(tr);
-				});
-			}
-
-			currentEntryPage = page;
-			hasMoreEntries = data.has_more;
-
-			if (data.has_more) {
-				loadMoreContainer.innerHTML = `<button class="secondary outline load-more-btn" onclick="loadMoreEntries()">Show More</button>`;
-			} else {
-				loadMoreContainer.innerHTML = '';
-			}
-		})
-		.catch(error => {
-			console.error('Error loading entries:', error);
-			document.getElementById('daily-miles-list').innerHTML = '<p>Error loading data.</p>';
-		});
-}
-
-function loadMoreEntries() {
-	if (hasMoreEntries) {
-		loadEntries(currentEntryPage + 1, true);
-	}
 }
 
 function editMiles(entryId, currentMiles) {
@@ -251,8 +215,6 @@ function submitEditMiles(entryId) {
 		body: 'entry_id=' + entryId + '&miles=' + miles
 	}).then(r => r.text()).then(html => {
 		document.getElementById('edit-response').innerHTML = html;
-		loadChartData();
-		loadEntries(1, false);
 		setTimeout(() => { window.location.reload(); }, 1000);
 	});
 }
@@ -265,29 +227,29 @@ function deleteMiles(entryId) {
 		body: 'entry_id=' + entryId
 	}).then(r => r.text()).then(html => {
 		document.getElementById('edit-response').innerHTML = html;
-		loadChartData();
-		loadEntries(1, false);
 		setTimeout(() => { window.location.reload(); }, 1000);
 	});
 }
 
-// Load data when page loads
-document.addEventListener('DOMContentLoaded', function() {
-	loadChartData();
-	loadEntries(1, false);
-});
+window.editMiles = editMiles;
+window.cancelEdit = cancelEdit;
+window.submitEditMiles = submitEditMiles;
+window.deleteMiles = deleteMiles;
 
-// Reload data after successful mile logging
-document.addEventListener('htmx:afterSwap', function(event) {
-	if (event.detail.target.id === 'log-response') {
-		if (event.detail.target.innerHTML.includes('successfully')) {
-			setTimeout(() => {
-				loadChartData();
-				loadEntries(1, false);
-				window.location.reload();
-			}, 1000);
+// Load chart data immediately (works for both initial load and boosted navigation)
+loadChartData();
+
+// Reload after successful mile logging
+const logResponse = document.getElementById('log-response');
+if (logResponse) {
+	const observer = new MutationObserver(function() {
+		if (logResponse.innerHTML.includes('successfully')) {
+			setTimeout(() => { window.location.reload(); }, 1000);
 		}
-	}
-});
+	});
+	observer.observe(logResponse, { childList: true });
+}
+
+})();
 </script>
 {% endblock %}

@@ -26,7 +26,8 @@
 	<form method="post" action="/settings" enctype="multipart/form-data"
 		hx-post="/settings"
 		hx-target="#settings-messages"
-		hx-swap="innerHTML">
+		hx-swap="innerHTML"
+		hx-select="unset">
 		<div class="settings-avatar">
 			<div class="settings-avatar-flex">
 				{% if walker.is_some() %}

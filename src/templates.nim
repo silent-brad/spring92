@@ -10,7 +10,8 @@ proc render_template*(template_name: static string, session: Option[SessionData]
     error_message: Option[string] = none(string), success_message: Option[string] = none(string),
     name: Option[string] = none(string), miles: Option[string] = none(string),
     current_total: Option[float] = none(float), progress_percent: Option[float] = none(float),
-    walker_id: Option[int64] = none(int64), email: Option[string] = none(string)): string {.gcsafe.} =
+    walker_id: Option[int64] = none(int64), email: Option[string] = none(string),
+    entries_html: string = ""): string {.gcsafe.} =
   compile_template_file(template_name, base_dir)
 
 proc render_leaderboard*(session: Option[SessionData] = none(SessionData),
@@ -36,6 +37,10 @@ proc render_posts_page*(posts: seq[PostView], session: Option[SessionData] = non
 proc render_post_feed*(posts: seq[PostView], has_more: bool = false,
     next_page: int = 2, session: Option[SessionData] = none(SessionData)): string {.gcsafe.} =
   compile_template_file("post_feed.jinja", base_dir)
+
+proc render_mile_entries_table*(entries: seq[MileEntry], has_more: bool = false,
+    next_page: int = 2): string {.gcsafe.} =
+  compile_template_file("mile_entries_table.jinja", base_dir)
 
 proc render_walker_selection*(walkers: seq[Walker], session: Option[SessionData] = none(SessionData),
     success_message: Option[string] = none(string),

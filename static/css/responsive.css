@@ -206,15 +206,28 @@
     white-space: normal;
   }
 
+  #leaderboard-table {
+    width: calc(100vw - 1rem);
+  }
+
+  #leaderboard-table table {
+    display: table;
+    white-space: normal;
+  }
+
   #leaderboard-table th,
   #leaderboard-table td {
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-xs);
     font-size: var(--font-size-sm);
   }
 
   #leaderboard-table .avatar-inline img {
     width: 28px;
     height: 28px;
+  }
+
+  #leaderboard-table .avatar-inline .avatar-name {
+    display: none;
   }
 
   #leaderboard-table .progress-bar-wrap {

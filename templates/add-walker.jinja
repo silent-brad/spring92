@@ -20,7 +20,7 @@
       <p>A walker account tracks your individual miles and progress. You can create multiple walker accounts for each family member.</p>
       {% endif %}
       
-      <form hx-post="/create-walker" hx-target="#walker-response">
+      <form hx-post="/create-walker" hx-target="#walker-response" hx-select="unset">
         <div>
           <label for="name">Walker Name</label>
           <input type="text" id="name" name="name" placeholder="Enter your name" required maxlength="50" />
