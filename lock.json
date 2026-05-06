@@ -1,0 +1,40 @@
+{
+  "depends": [
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/lf1rh0lxv9wgvplp3p1qvwix1mfg46jv-source",
+      "rev": "0845c735a9746188b2257ee2cff672eb6ec26e8a",
+      "sha256": "0bi3kd41zjhx6kk1v7cxrgqdbsw2hf19q7zhqbfs2vk1axvaixf1",
+      "url": "https://github.com/nim-lang/checksums/archive/0845c735a9746188b2257ee2cff672eb6ec26e8a.tar.gz",
+      "ref": "v0.2.2",
+      "packages": [
+        "checksums"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/pf2vnqlkmn7mnww976ms93ibv8qkqh5c-source",
+      "rev": "29450a2063970712422e1ab857695c12d80112a6",
+      "sha256": "11dna09ccdhj3pzpqa04j7a95ibx907z6n1ff33yf0n92qa4x59z",
+      "url": "https://github.com/nim-lang/db_connector/archive/29450a2063970712422e1ab857695c12d80112a6.tar.gz",
+      "ref": "devel",
+      "packages": [
+        "db_connector"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/yr8fsc359hr8gcraf03z6z2g03kyixfa-source",
+      "rev": "b7a25c62e63b459b9bfbef1de05199e4837c67d0",
+      "sha256": "0vh03jly6ynj3bbnqk190602n53r49x6plpdww4b8bd6ilkjwdzn",
+      "url": "https://github.com/enthus1ast/nimja/archive/b7a25c62e63b459b9bfbef1de05199e4837c67d0.tar.gz",
+      "ref": "0.10.1",
+      "packages": [
+        "nimja"
+      ],
+      "srcDir": "src"
+    }
+  ]
+}

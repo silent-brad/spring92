@@ -40,6 +40,7 @@
   CLOSED: [2026-05-05 Tue 15:48]
 * DONE Add avatar/name to dashboard page
   CLOSED: [2026-05-04 Mon 22:11]
+* DONE Refactor package tooling
 * TODO Maybe make it not reload page on form submit
 
 * TODO Do complete server refactor
