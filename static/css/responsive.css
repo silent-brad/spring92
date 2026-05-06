@@ -37,14 +37,25 @@
   }
 
   .nav-brand {
-    flex-shrink: 1;
+    flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
+    order: 1;
+  }
+
+  .nav-brand li a img {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  nav {
+    gap: var(--space-xs);
   }
 
   .avatar-dropdown {
     align-self: center;
     flex-shrink: 0;
+    order: 3;
   }
 
   .dropdown-menu {
@@ -62,11 +73,17 @@
     font-size: var(--font-size-md);
   }
 
+  .nav-brand li a {
+    font-size: 1.1rem;
+  }
+
   .hamburger-toggle {
     display: flex;
     align-self: center;
     position: relative;
     z-index: 10000;
+    flex-shrink: 0;
+    order: 2;
   }
 
   .hamburger-checkbox {

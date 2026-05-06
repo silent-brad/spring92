@@ -387,6 +387,10 @@ li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
 }
 
 .avatar:hover {
@@ -409,7 +413,8 @@ li {
   transition: var(--transition);
 }
 
-.avatar-dropdown:hover .dropdown-menu {
+.avatar-dropdown:hover .dropdown-menu,
+.avatar-dropdown:focus-within .dropdown-menu {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);

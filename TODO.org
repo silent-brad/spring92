@@ -43,6 +43,7 @@
 * DONE Refactor package tooling
 * TODO Maybe make it not reload page on form submit
 
-* TODO Do complete server refactor
+* DONE Do complete server refactor
+  CLOSED: [2026-05-06 Wed 00:35]
 * TODO Add password reset email link
 * TODO Refactor image multipart?
