@@ -1,6 +1,7 @@
 # TODO
 
 ## Big ones
+
 - [x] Resize pictures
 - [x] Fix WYSIWYG editor to only include B,I,U,Quote,Link
 
@@ -42,7 +43,6 @@
 - [x] Make PWA
 - [x] Deploy
 
-
 - [x] When logged in as user, then clicks on "/add-walker", clicking "create-walker-account" will not work (`/create-walker route not authorized`)
 - [x] Dates are not right
 - [x] Change error color
@@ -55,8 +55,6 @@
 - [ ] Add pagination to post feed
 - [x] Add delete button to walker settings
 - [ ] Add delete/edit button to post feed
-
-
 
 - [ ] Add Rive animations?
 

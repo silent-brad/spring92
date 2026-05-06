@@ -42,4 +42,6 @@
   CLOSED: [2026-05-04 Mon 22:11]
 * TODO Maybe make it not reload page on form submit
 
+* TODO Do complete server refactor
 * TODO Add password reset email link
+* TODO Refactor image multipart?

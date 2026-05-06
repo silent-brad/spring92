@@ -36,8 +36,15 @@
     padding: var(--space-md);
   }
 
+  .nav-brand {
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
   .avatar-dropdown {
     align-self: center;
+    flex-shrink: 0;
   }
 
   .dropdown-menu {
@@ -140,7 +147,7 @@
   }
 
   nav {
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 0;
   }
 
@@ -178,8 +185,23 @@
   }
 
   table {
-    display: block;
-    white-space: nowrap;
+    display: table;
+    white-space: normal;
+  }
+
+  #leaderboard-table th,
+  #leaderboard-table td {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  #leaderboard-table .avatar-inline img {
+    width: 28px;
+    height: 28px;
+  }
+
+  #leaderboard-table .progress-bar-wrap {
+    width: 3rem;
   }
 
   .landing {

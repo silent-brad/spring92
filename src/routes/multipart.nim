@@ -13,41 +13,41 @@ type
     files*: Table[string, (string, string, int)] # (filename, contentType, size)
     error*: string
 
-proc parseMultipart*(req: Request): Future[MultipartData] {.async.} =
-  result = MultipartData(fields: initTable[string, string](), files: initTable[
+proc parse_multipart*(req: Request): Future[MultipartData] {.async.} =
+  result = MultipartData(fields: init_table[string, string](), files: init_table[
       string, (string, string, int)](), error: "")
 
-  if not req.headers.hasKey("content-type"):
+  if not req.headers.has_key("content-type"):
     result.error = "Missing Content-Type"
     return
 
-  let ctHeader = req.headers["content-type"]
-  let contentType = ctHeader
-  if not contentType.startsWith("multipart/form-data"):
+  let ct_header = req.headers["content-type"]
+  let content_type = ct_header
+  if not content_type.starts_with("multipart/form-data"):
     result.error = "Invalid Content-Type"
     return
 
   # Extract boundary more robustly by parsing parameters
-  let params = contentType.split(';').mapIt(it.strip())
+  let params = content_type.split(';').map_it(it.strip())
   var boundary = ""
   for param in params:
-    if param.startsWith("boundary="):
-      let boundaryRaw = param[9 .. ^1].strip()
-      boundary = if boundaryRaw.startsWith('"') and boundaryRaw.endsWith(
-          '"'): boundaryRaw[1 .. ^2] else: boundaryRaw
+    if param.starts_with("boundary="):
+      let boundary_raw = param[9 .. ^1].strip()
+      boundary = if boundary_raw.starts_with('"') and boundary_raw.ends_with(
+          '"'): boundary_raw[1 .. ^2] else: boundary_raw
       break
   if boundary == "":
     result.error = "Missing boundary"
     return
 
-  let fullBoundary = "--" & boundary
+  let full_boundary = "--" & boundary
 
   # Get full body (already available as string)
   let body = req.body
 
   # Split into parts (parts[0] is preamble, last is epilogue)
-  let parts = body.split(fullBoundary)
-  if parts.len < 3 or not parts[^1].startsWith(
+  let parts = body.split(full_boundary)
+  if parts.len < 3 or not parts[^1].starts_with(
       "--"): # At least preamble, one part, epilogue; check final '--' for validity
     result.error = "Malformed multipart body"
     return
@@ -57,32 +57,32 @@ proc parseMultipart*(req: Request): Future[MultipartData] {.async.} =
     if part.len == 0: continue
 
     # Find end of headers (\r\n\r\n)
-    let headerEnd = part.find("\r\n\r\n")
-    if headerEnd == -1: continue
+    let header_end = part.find("\r\n\r\n")
+    if header_end == -1: continue
 
-    let headerStr = part[0 ..< headerEnd]
-    var partBody = part[headerEnd + 4 .. ^1].strip(trailing = true, chars = {
+    let header_str = part[0 ..< header_end]
+    var part_body = part[header_end + 4 .. ^1].strip(trailing = true, chars = {
         '\r', '\n'})
 
     # Parse part headers
-    var part_headers = newTable[string, string]()
-    for line in headerStr.split("\r\n"):
+    var part_headers = new_table[string, string]()
+    for line in header_str.split("\r\n"):
       if line.len == 0: continue
-      let colonPos = line.find(':')
-      if colonPos != -1:
-        let key = line[0 ..< colonPos].strip().toLowerAscii()
-        let val = line[colonPos + 1 .. ^1].strip()
+      let colon_pos = line.find(':')
+      if colon_pos != -1:
+        let key = line[0 ..< colon_pos].strip().to_lower_ascii()
+        let val = line[colon_pos + 1 .. ^1].strip()
         part_headers[key] = val
 
     # Parse Content-Disposition
-    if not part_headers.hasKey("content-disposition"): continue
+    if not part_headers.has_key("content-disposition"): continue
     let disp = part_headers["content-disposition"]
-    if not disp.startsWith("form-data"): continue
+    if not disp.starts_with("form-data"): continue
 
-    let dispParams = disp.split(';').mapIt(it.strip())
+    let disp_params = disp.split(';').map_it(it.strip())
     var name = ""
     var filename = ""
-    for param in dispParams[1 .. ^1]:
+    for param in disp_params[1 .. ^1]:
       let kv = param.split('=', 1)
       if kv.len != 2: continue
       let pkey = kv[0].strip()

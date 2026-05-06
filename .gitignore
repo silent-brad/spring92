@@ -11,8 +11,8 @@ spring92.db
 !.gitignore
 !LICENSE
 !README.md
-!TODO.md
-!NEW_TODO.org
+!OLD_TODO.md
+!TODO.org
 !DEPS.md
 !logo/
 !logo/**

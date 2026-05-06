@@ -34,6 +34,6 @@ type
 
 const
   static_dir* = "static"
-  port* = 8084
+  port* = 8091
 
 var sessions* {.global.}: Table[string, Session]
