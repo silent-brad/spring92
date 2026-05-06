@@ -1,5 +1,5 @@
 import strutils, os, strformat, random
-from times import format, now, getTime, toUnix
+from times import format, now, get_time, to_unix
 import std/sha1
 
 # Initialize random seed with high-precision time and process id for uniqueness

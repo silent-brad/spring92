@@ -22,7 +22,7 @@
             "--deepcopy:on"
             "-d:release"
             "-d:ssl"
-            "--mm:none"
+            "--mm:orc"
           ];
           buildInputs = with pkgs; [
             nim-2_0
@@ -35,7 +35,8 @@
           postFixup = ''
             wrapProgram $out/bin/main \
               --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath [ pkgs.sqlite ]}" \
-              --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath [ pkgs.imagemagick ]}"
+              --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath [ pkgs.imagemagick ]}" \
+              --prefix PATH : "${pkgs.lib.makeBinPath [ pkgs.imagemagick ]}"
           '';
           meta.mainProgram = "main";
         };

@@ -1,39 +1,29 @@
-import tables
-import times
+import database/models
+export Walker, Family, MileEntry
 
 type
-  Session* = object
+  SessionData* = object
     family_id*: int64
     walker_id*: int64
     email*: string
     name*: string
     avatar_filename*: string
-    is_family_session*: bool # true if logged into family account, false if in walker
-
-  Walker_Info* = object
-    id*: int64
-    name*: string
-    family_id*: int64
-    avatar_filename*: string
-    has_custom_avatar*: bool
-    created_at*: string
+    is_family_session*: bool
 
   Entry* = object
-    walker*: Walker_Info
+    walker*: Walker
     total_miles*: float
     progress_percent*: float
 
-  Post* = object
+  PostView* = object
     id*: int64
     walker_id*: int64
     name*: string
     avatar_filename*: string
     text_content*: string
     image_filename*: string
-    created_at*: DateTime
+    created_at*: string
 
 const
   static_dir* = "static"
   port* = 8091
-
-var sessions* {.global.}: Table[string, Session]

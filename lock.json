@@ -35,6 +35,174 @@
         "nimja"
       ],
       "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/kjfg4d483f59y73sz54g17yss9kp5w4k-source",
+      "rev": "406b076284d2edc9379bd7eb0510648050341b7c",
+      "sha256": "03gl9cswc7mbyqh8xizgac8av81xxz7wbxqkyn4hx6v5r3dbcr7k",
+      "url": "https://github.com/planety/Prologue/archive/406b076284d2edc9379bd7eb0510648050341b7c.tar.gz",
+      "ref": "v0.6.8",
+      "packages": [
+        "prologue"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/zgbjkymqpwb7g6qkxdg05wwk2dgrzgjl-source",
+      "rev": "78192dbcf720f74acc4ce6d80383ea463d5252c6",
+      "sha256": "07szladnxb3cdsknvska6gkx0viylxw5pfc4vg1ghmrna447qphq",
+      "url": "https://github.com/moigagoo/norm/archive/78192dbcf720f74acc4ce6d80383ea463d5252c6.tar.gz",
+      "ref": "2.8.7",
+      "packages": [
+        "norm"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/73h80vbxzpffpywzdjycak8a1y7cdqdb-source",
+      "rev": "4593305ed1e49731fc75af1dc572dd2559aad19c",
+      "sha256": "1b666qws5sva3n5allin0ycvnqlzdjd7xzprpdvv632ccqddzcl9",
+      "url": "https://github.com/nitely/nim-regex/archive/4593305ed1e49731fc75af1dc572dd2559aad19c.tar.gz",
+      "ref": "v0.26.3",
+      "packages": [
+        "regex"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/f2xp1v0vnplwfjnk8nqsi7gd9pnb9gcv-source",
+      "rev": "b3dbc9c4d08e58c5b7bfad6dc7ef2ee52f2f4c08",
+      "sha256": "1v4rz42lwcazs6isi3kmjylkisr84mh0kgmlqycx4i885dn3g0l4",
+      "url": "https://github.com/cheatfate/nimcrypto/archive/b3dbc9c4d08e58c5b7bfad6dc7ef2ee52f2f4c08.tar.gz",
+      "ref": "v0.7.3^{}",
+      "packages": [
+        "nimcrypto"
+      ],
+      "srcDir": ""
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/pk3h4sirdxp0bp74rmhdbfq210z8hgqv-source",
+      "rev": "372b0ab1a6036a9f48f7540e7f3090e61796d947",
+      "sha256": "1xkyk8sqfhgmg5yaqpl10qva1zdfdjx0cw68fl6agskaad4af7i0",
+      "url": "https://github.com/planety/cookiejar/archive/372b0ab1a6036a9f48f7540e7f3090e61796d947.tar.gz",
+      "ref": "v0.3.1",
+      "packages": [
+        "cookiejar"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/mwwlm0fc2i79rynvhiyc35wwb5p9ydy6-source",
+      "rev": "47cb5e79c6070153240f7395134885a114b0f039",
+      "sha256": "1vyw5s60ylv4l8rkfbq9jzzq2qra2spbpv135nyjmbdij0f5p9bh",
+      "url": "https://github.com/ringabout/httpx/archive/47cb5e79c6070153240f7395134885a114b0f039.tar.gz",
+      "ref": "v0.3.8",
+      "packages": [
+        "httpx"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/lsbcz1zjswczah55qixrr20ch9zyb202-source",
+      "rev": "fdad43b69bc4517a3595d1a28e86161e8cfca614",
+      "sha256": "1b0zks0qvfwi7x1vxxa0g3ipjky81lh5nqgiqnl1xn7i57ngxk3x",
+      "url": "https://github.com/planety/logue/archive/fdad43b69bc4517a3595d1a28e86161e8cfca614.tar.gz",
+      "ref": "v0.2.4",
+      "packages": [
+        "logue"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/6hg1hcawb5n9h6pfng035bq457z2l59n-source",
+      "rev": "937ebb84bf08d24b97b2a9b8c86c37cd39fab520",
+      "sha256": "1j9pv270syz7w8b8fl9w5z5dkfy9ql76n6jjj3vmamxi9bh6d3ha",
+      "url": "https://github.com/PhilippMDoerner/lowdb/archive/937ebb84bf08d24b97b2a9b8c86c37cd39fab520.tar.gz",
+      "ref": "0.2.1",
+      "packages": [
+        "lowdb"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/1mcck56sr1h1sf8gv87m761x6f3d1k0l-source",
+      "rev": "66f2458710dc641dd4640368f9483c8a0ec70561",
+      "sha256": "092z3glgdb7rmwajm7dmqzvralkm7ixighixk8ycf8sf17zm72ck",
+      "url": "https://github.com/nitely/nim-unicodedb/archive/66f2458710dc641dd4640368f9483c8a0ec70561.tar.gz",
+      "ref": "v0.13.2",
+      "packages": [
+        "unicodedb"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/16fm03dql3pplz3ip40k0nbxw1gc0880-source",
+      "rev": "f5d50197b266173dd4ca4c6fdd30361398433bb4",
+      "sha256": "1cd3n9l45z60gpv0rc84v1ngkjxn0i45vz0lzy63052m7m0j2rks",
+      "url": "https://github.com/nitely/nim-unicodeplus/archive/f5d50197b266173dd4ca4c6fdd30361398433bb4.tar.gz",
+      "ref": "v0.9.1",
+      "packages": [
+        "unicodeplus"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/jyd3r1x8dg4qjb236l51q7qckw3z2crg-source",
+      "rev": "c9344036936a49db3ff1bce97e0896d6aabcf22d",
+      "sha256": "0c0k6s45pgga02wx7j9agf1f5lwwfxvxj94qy1m32cy8sx2chjgp",
+      "url": "https://github.com/ringabout/ioselectors/archive/c9344036936a49db3ff1bce97e0896d6aabcf22d.tar.gz",
+      "ref": "v0.2.0",
+      "packages": [
+        "ioselectors"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/wflr6jv17hx3c10awxcs0i4qwsy4liza-source",
+      "rev": "a9511be3b12f3117a142e3490dc5653933df7d42",
+      "sha256": "0fl5dfs07w2wc0b8aq30fji23cplxmrj5vyf8mdn7gzz6gdyqamh",
+      "url": "https://github.com/c-blake/cligen/archive/a9511be3b12f3117a142e3490dc5653933df7d42.tar.gz",
+      "ref": "1.9.6",
+      "packages": [
+        "cligen"
+      ],
+      "srcDir": ""
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/c4c1bbxd29gmjj543wma2sbya5wvw5yg-source",
+      "rev": "6845c68cf00c1546f49d628ae11334acba966bfb",
+      "sha256": "007bkx8dwy8n340zbp6wyqfsq9bh6q5ykav1ywdlwykyp1n909bh",
+      "url": "https://github.com/nitely/nim-segmentation/archive/6845c68cf00c1546f49d628ae11334acba966bfb.tar.gz",
+      "ref": "v0.1.0",
+      "packages": [
+        "segmentation"
+      ],
+      "srcDir": "src"
+    },
+    {
+      "method": "fetchzip",
+      "path": "/nix/store/9d2wzxvnk7m8s14f448wjd818p29k971-source",
+      "rev": "07fb549ecf656f9aab957b78fb0d1e2d2e47a76f",
+      "sha256": "0h1nda2qil418zpn457g6xj6vzf7ccs53hmhh7yngk1rz9f47flq",
+      "url": "https://github.com/ringabout/wepoll/archive/07fb549ecf656f9aab957b78fb0d1e2d2e47a76f.tar.gz",
+      "ref": "v0.1.2",
+      "packages": [
+        "wepoll"
+      ],
+      "srcDir": "src"
     }
   ]
 }

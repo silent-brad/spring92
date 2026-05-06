@@ -1,0 +1,120 @@
+import prologue
+import std/[options, strutils, strformat, json]
+import common
+import ../database/[models, miles as db_miles]
+import ../types, ../templates, ../utils
+
+proc dashboard_page*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  let total = get_user_total_miles(db_conn, session.get().walker_id)
+  let pct = min(total / 92.0 * 100.0, 100.0)
+  var msg = none(string)
+  if "success=signup" in ctx.request.query: msg = some("Account created successfully! Welcome to Spring92!")
+  elif "success=login" in ctx.request.query: msg = some("Login successful! Welcome back to Spring92!")
+  html_resp(ctx, render_template("dashboard.jinja", session, success_message = msg,
+            current_total = some(total), progress_percent = some(pct)))
+
+proc log_page*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  let total = get_user_total_miles(db_conn, session.get().walker_id)
+  html_resp(ctx, render_template("dashboard.jinja", session,
+            current_total = some(total), progress_percent = some(min(total / 92.0 * 100.0, 100.0))))
+
+proc do_log_miles*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  try:
+    let miles = parse_float(ctx.get_post_params("miles"))
+    if miles <= 0: html_resp(ctx, html_error("Miles must be positive")); return
+    if miles > 50: html_resp(ctx, html_error("Miles cannot exceed 50 per entry")); return
+    log_miles(db_conn, session.get().walker_id, miles)
+    html_resp(ctx, html_success(&"Logged {miles:.1f} miles successfully!"))
+  except:
+    html_resp(ctx, html_error("Invalid miles value"))
+
+proc do_edit_miles*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  try:
+    let entry_id = parse_biggest_int(ctx.get_post_params("entry_id"))
+    let entry = get_mile_entry_by_id(db_conn, entry_id)
+    if entry.walker_id != session.get().walker_id:
+      html_resp(ctx, html_error("You can only edit your own entries"), Http403); return
+    let miles = parse_float(ctx.get_post_params("miles"))
+    if miles <= 0: html_resp(ctx, html_error("Miles must be positive")); return
+    if miles > 50: html_resp(ctx, html_error("Miles cannot exceed 50 per entry")); return
+    update_mile_entry(db_conn, entry_id, miles)
+    html_resp(ctx, html_success(&"Updated to {miles:.1f} miles successfully!"))
+  except:
+    html_resp(ctx, html_error("Invalid entry"))
+
+proc do_delete_miles*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  try:
+    let entry_id = parse_biggest_int(ctx.get_post_params("entry_id"))
+    let entry = get_mile_entry_by_id(db_conn, entry_id)
+    if entry.walker_id != session.get().walker_id:
+      html_resp(ctx, html_error("You can only delete your own entries"), Http403); return
+    delete_mile_entry(db_conn, entry_id)
+    html_resp(ctx, html_success("Entry deleted successfully!"))
+  except:
+    html_resp(ctx, html_error("Invalid entry"))
+
+proc leaderboard_page*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  var msg = none(string)
+  if "success=signup" in ctx.request.query: msg = some("Welcome to Spring92!")
+  elif "success=login" in ctx.request.query: msg = some("Welcome back to Spring92!")
+  const ps = 15
+  let lb = get_leaderboard_paginated(db_conn, ps + 1, 0)
+  let has_more = lb.len > ps
+  let display = if has_more: lb[0 ..< ps] else: lb
+  html_resp(ctx, render_leaderboard(session, msg, user_stats = to_display_entries(display),
+            has_more = has_more, next_page = 2, offset = 0, current_page = 1))
+
+proc api_leaderboard_table*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  const ps = 15
+  var page = 1
+  try: page = parse_int(ctx.get_query_params("page", "1"))
+  except: discard
+  let offset = (page - 1) * ps
+  let lb = get_leaderboard_paginated(db_conn, ps + 1, offset)
+  let has_more = lb.len > ps
+  let display = if has_more: lb[0 ..< ps] else: lb
+  html_resp(ctx, render_leaderboard_table(to_display_entries(display),
+            has_more = has_more, next_page = page + 1, offset = offset, current_page = page))
+
+proc api_user_miles_data*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  let data = get_user_miles_by_date(db_conn, session.get().walker_id)
+  var dates = new_j_array()
+  var miles_arr = new_j_array()
+  for entry in data:
+    dates.add(new_j_string(entry.date))
+    miles_arr.add(new_j_float(entry.miles))
+  json_resp(ctx, %*{"dates": dates, "miles": miles_arr})
+
+proc api_user_miles_entries*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  const ps = 10
+  var page = 1
+  try: page = parse_int(ctx.get_query_params("page", "1"))
+  except: discard
+  let offset = (page - 1) * ps
+  let wid = session.get().walker_id
+  let total = get_user_entry_count(db_conn, wid)
+  let recent = get_user_recent_entries(db_conn, wid, ps + 1, offset)
+  let has_more = recent.len > ps
+  let display = if has_more: recent[0 ..< ps] else: recent
+  var entries = new_j_array()
+  for e in display:
+    entries.add(%*{"id": e.id, "date": format_date_with_ordinal(e.logged_at), "miles": e.miles})
+  json_resp(ctx, %*{"entries": entries, "has_more": has_more, "next_page": page + 1, "total": total})

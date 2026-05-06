@@ -1,91 +1,89 @@
-import asynchttpserver
-import options
-import os, strutils, macros
-import times, strformat
-import ../types, ../utils, ../database/models
+import prologue
+import std/[options, strutils, json, os]
+import db_connector/db_sqlite
+import ../database/models
+import ../types, ../utils, ../upload
 
-template guard_walker*(session: Option[Session]): untyped =
-  if session.is_none or session.get().is_family_session:
-    let loc = if session.is_none: "/login" else: "/select-walker"
-    return ("", Http302, new_http_headers([("Location", loc)]))
+var db_conn*: DbConn
+var PASSKEY*: string
 
-template guard_login*(session: Option[Session]): untyped =
-  if session.is_none:
-    return ("", Http302, new_http_headers([("Location", "/login")]))
+template gc_safe*(body: untyped) =
+  {.cast(gcsafe).}:
+    body
 
-template guard_json_unauthorized*(session: Option[Session]): untyped =
-  if session.is_none or session.get().is_family_session:
-    return ("{\"error\": \"Unauthorized\"}", Http401,
-            new_http_headers([("Content-Type", "application/json")]))
+# -- Session helpers --
 
-proc post_unauthorized*(msg: string): (string, HttpCode, HttpHeaders) =
-  (html_error(msg), Http401, new_http_headers([("Content-Type", "text/html")]))
+proc get_session*(ctx: Context): Option[SessionData] =
+  let fid = ctx.session.get_or_default("family_id", "")
+  if fid == "": return none(SessionData)
+  some(SessionData(
+    family_id: parse_biggest_int(fid),
+    walker_id: parse_biggest_int(ctx.session.get_or_default("walker_id", "0")),
+    email: ctx.session.get_or_default("email", ""),
+    name: ctx.session.get_or_default("name", ""),
+    avatar_filename: ctx.session.get_or_default("avatar_filename", ""),
+    is_family_session: ctx.session.get_or_default("is_family_session", "true") == "true"
+  ))
 
-proc serve_static_file*(req_path, url_prefix, dir: string,
-                        client_headers: HttpHeaders,
-                        check_safe_ext: bool = false): (string, HttpCode, HttpHeaders) =
-  let file_path = sanitize_path(req_path[url_prefix.len..^1])
-  let full_path = dir / file_path
+proc set_family_session*(ctx: Context, family: Family) =
+  ctx.session["family_id"] = $family.id
+  ctx.session["walker_id"] = "0"
+  ctx.session["email"] = family.email
+  ctx.session["name"] = ""
+  ctx.session["avatar_filename"] = ""
+  ctx.session["is_family_session"] = "true"
 
-  if file_path.contains("..") or not full_path.starts_with(dir & "/"):
-    return ("Access denied", Http403, new_http_headers([("Content-Type", "text/html")]))
+proc set_walker_session*(ctx: Context, family_id: int64, email: string, walker: Walker) =
+  ctx.session["family_id"] = $family_id
+  ctx.session["walker_id"] = $walker.id
+  ctx.session["email"] = email
+  ctx.session["name"] = walker.name
+  ctx.session["avatar_filename"] = walker.avatar_filename
+  ctx.session["is_family_session"] = "false"
 
-  if check_safe_ext and not is_safe_file_extension(file_path):
-    return ("File type not allowed", Http403, new_http_headers([("Content-Type", "text/html")]))
+# -- Response helpers --
 
-  if not file_exists(full_path):
-    return ("File not found", Http404, new_http_headers([("Content-Type", "text/html")]))
+proc html_resp*(ctx: Context, body: string, code: HttpCode = Http200) =
+  resp html_response(body, code, headers = ctx.response.headers)
 
-  let ext = split_file(full_path).ext.to_lower_ascii()
-  let content_type = case ext:
-    of ".js": "application/javascript"
-    of ".css": "text/css"
-    of ".html": "text/html"
-    of ".png": "image/png"
-    of ".webp": "image/webp"
-    of ".jpg", ".jpeg": "image/jpeg"
-    of ".gif": "image/gif"
-    of ".svg": "image/svg+xml"
-    of ".ico": "image/x-icon"
-    of ".webmanifest": "application/manifest+json"
-    else: "application/octet-stream"
-
-  let file_info = get_file_info(full_path)
-  let last_modified = file_info.last_write_time
-  let last_modified_str = last_modified.utc.format("ddd, dd MMM yyyy HH:mm:ss 'GMT'")
-  let etag = &"\"w/{file_info.size}.{last_modified_str}\""
-
-  var resp_headers = new_http_headers([
-    ("Content-Type", content_type),
-    ("Last-Modified", last_modified_str),
-    ("ETag", etag)
-  ])
-
-  # Check If-None-Match for conditional request (304 Not Modified)
-  if client_headers.has_key("If-None-Match"):
-    if client_headers["If-None-Match"] == etag:
-      return ("", Http304, resp_headers)
-
-  let is_user_content = dir in @["pictures", "avatars"]
-
-  if "?v=" in req_path:
-    # Versioned static assets: cache forever
-    resp_headers.add("Cache-Control", "public, max-age=31536000, immutable")
-  elif is_user_content:
-    resp_headers.add("Cache-Control", "public, max-age=86400, must-revalidate")
+proc redirect_resp*(ctx: Context, url: string) =
+  if ctx.request.has_header("HX-Request"):
+    ctx.response.set_header("HX-Redirect", url)
+    resp html_response("", headers = ctx.response.headers)
   else:
-    resp_headers.add("Cache-Control", "public, max-age=86400")
+    resp redirect(url, Http302, headers = ctx.response.headers)
 
-  return (read_file(full_path), Http200, resp_headers)
+proc hx_redirect*(ctx: Context, url: string) =
+  ctx.response.set_header("HX-Redirect", url)
+  html_resp(ctx, "")
+
+proc json_resp*(ctx: Context, data: JsonNode) =
+  ctx.response.set_header("Content-Type", "application/json")
+  html_resp(ctx, $data)
+
+proc require_walker*(ctx: Context): Option[SessionData] =
+  let s = get_session(ctx)
+  if s.is_none: redirect_resp(ctx, "/login"); return none(SessionData)
+  if s.get().is_family_session: redirect_resp(ctx, "/select-walker"); return none(SessionData)
+  s
+
+proc require_login*(ctx: Context): Option[SessionData] =
+  let s = get_session(ctx)
+  if s.is_none: redirect_resp(ctx, "/login"); return none(SessionData)
+  s
 
 proc to_display_entries*(leaderboard: seq[tuple[walker: Walker, total_miles: float]]): seq[Entry] =
-  for db_entry in leaderboard:
-    result.add Entry(
-      walker: Walker_Info(
-        id: db_entry.walker.id,
-        name: db_entry.walker.name,
-        avatar_filename: db_entry.walker.avatar_filename,
-      ),
-      total_miles: db_entry.total_miles,
-      progress_percent: min(db_entry.total_miles / 92.0 * 100.0, 100.0),
-    )
+  for e in leaderboard:
+    result.add Entry(walker: e.walker, total_miles: e.total_miles,
+                     progress_percent: min(e.total_miles / 92.0 * 100.0, 100.0))
+
+proc try_upload*(ctx: Context, field, dir: string): string =
+  try:
+    let f = ctx.get_upload_file(field)
+    if f.filename.len == 0: return ""
+    let safe = sanitize_filename(f.filename)
+    if not is_safe_file_extension(safe): return ""
+    if f.body.len > 10_485_760: return ""
+    let ext = if safe.contains("."): safe.split(".")[^1].to_lower_ascii() else: "jpg"
+    save_uploaded_file(f.body, ext, dir)
+  except: ""
