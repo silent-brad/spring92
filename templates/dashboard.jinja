@@ -116,7 +116,12 @@
 {% block extra_js %}
 <script src="/static/js/chart.js"></script>
 <script>
-(function() {
+(function initDashboard() {
+
+if (typeof Chart === 'undefined') {
+	setTimeout(initDashboard, 50);
+	return;
+}
 
 function incrementMiles() {
 	const input = document.getElementById('miles');

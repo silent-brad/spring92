@@ -226,10 +226,6 @@
     height: 28px;
   }
 
-  #leaderboard-table .avatar-inline .avatar-name {
-    display: none;
-  }
-
   #leaderboard-table .progress-bar-wrap {
     width: 3rem;
   }

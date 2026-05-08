@@ -708,6 +708,12 @@ button.avatar:focus {
   overflow: hidden;
 }
 
+#leaderboard-table th:first-child,
+#leaderboard-table td:first-child {
+  width: 2rem;
+  text-align: center;
+}
+
 #leaderboard-table th:first-child {
   border-top-left-radius: var(--radius);
 }
