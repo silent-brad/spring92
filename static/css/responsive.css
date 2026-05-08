@@ -34,6 +34,11 @@
 
   header {
     padding: var(--space-md);
+    height: 4rem;
+  }
+
+  main {
+    padding-top: calc(4rem + var(--space-sm));
   }
 
   .nav-brand {
@@ -44,8 +49,8 @@
   }
 
   .nav-brand li a img {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   nav {
@@ -74,7 +79,7 @@
   }
 
   .nav-brand li a {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .hamburger-toggle {
@@ -231,11 +236,11 @@
   }
 
   .landing {
-    height: calc(100vh - 6rem - 60px);
+    height: calc(100vh - 4rem - 60px);
   }
 
   .landing-content {
-    height: calc(100vh - 6rem - 60px);
+    height: calc(100vh - 4rem - 60px);
   }
 
   .landing-content h1 {

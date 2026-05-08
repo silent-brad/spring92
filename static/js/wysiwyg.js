@@ -22,12 +22,10 @@ function initWysiwygEditor() {
 
 	var editor = document.getElementById('text_content_editor');
 	if (editor) {
-		setupPlaceholder();
 		setupFormHandling();
 		setupBlockquoteHandling();
 	}
 
-	injectEditorStyles();
 	setupPostResponseHandlers();
 }
 
@@ -152,79 +150,6 @@ function updateHiddenTextarea() {
 		});
 		hiddenTextarea.value = clone.innerHTML;
 	}
-}
-
-function setupPlaceholder() {
-	var editor = document.getElementById('text_content_editor');
-	if (!editor) return;
-
-	editor.addEventListener('focus', function() {
-		if (this.innerHTML === '') this.innerHTML = '';
-	});
-
-	editor.addEventListener('blur', function() {
-		if (this.innerHTML === '') this.innerHTML = '';
-	});
-}
-
-function injectEditorStyles() {
-	if (document.getElementById('wysiwyg-editor-styles')) return;
-	var style = document.createElement('style');
-	style.id = 'wysiwyg-editor-styles';
-	style.textContent =
-		'#text_content_editor:empty:before,' +
-		'[id^="edit-editor-"]:empty:before {' +
-		'  content: attr(placeholder);' +
-		'  color: var(--color-text-muted);' +
-		'  font-style: italic;' +
-		'  pointer-events: none;' +
-		'}' +
-		'#text_content_editor:focus:before,' +
-		'[id^="edit-editor-"]:focus:before {' +
-		'  content: "";' +
-		'}' +
-		'.toolbar-btn {' +
-		'  background: var(--color-background) !important;' +
-		'  border: 1px solid var(--color-border) !important;' +
-		'  border-radius: 0.25rem !important;' +
-		'  cursor: pointer !important;' +
-		'  transition: all 0.2s !important;' +
-		'  color: inherit !important;' +
-		'  font-family: inherit !important;' +
-		'  font-size: inherit !important;' +
-		'}' +
-		'.toolbar-btn:hover {' +
-		'  background: var(--color-surface-variant) !important;' +
-		'  transform: translateY(-1px);' +
-		'}' +
-		'.toolbar-btn:active {' +
-		'  background: var(--color-border) !important;' +
-		'  transform: translateY(0);' +
-		'}' +
-		'blockquote {' +
-		'  border-left: 4px solid var(--color-border) !important;' +
-		'  padding-left: 1rem !important;' +
-		'  margin: 1rem 0 !important;' +
-		'  color: var(--color-text-muted) !important;' +
-		'  font-style: italic !important;' +
-		'}' +
-		'#text_content_editor blockquote p,' +
-		'[id^="edit-editor-"] blockquote p {' +
-		'  margin: 0 0 0.25rem 0 !important;' +
-		'}' +
-		'#text_content_editor blockquote cite,' +
-		'[id^="edit-editor-"] blockquote cite {' +
-		'  display: block !important;' +
-		'  font-size: 0.85em !important;' +
-		'  font-style: normal !important;' +
-		'  color: var(--color-text-muted) !important;' +
-		'  opacity: 0.8;' +
-		'}' +
-		'#text_content_editor blockquote cite::before,' +
-		'[id^="edit-editor-"] blockquote cite::before {' +
-		'  content: "\\2014  " !important;' +
-		'}';
-	document.head.appendChild(style);
 }
 
 function setupPostResponseHandlers() {
@@ -395,40 +320,39 @@ function editPost(postId) {
 		'<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
 	var html =
-		'<form id="edit-post-form-' + postId + '" enctype="multipart/form-data" style="margin: 0;">' +
+		'<form id="edit-post-form-' + postId + '" enctype="multipart/form-data">' +
 		'<input type="hidden" name="post_id" value="' + postId + '">' +
-		'<div id="edit-toolbar-' + postId + '" style="border: 1px solid var(--color-border); border-bottom: none; border-radius: 0.375rem 0.375rem 0 0; padding: 0.5rem; background: var(--color-background); display: flex; flex-wrap: wrap; gap: 0.25rem;">' +
-		'<button type="button" onclick="editFormatText(' + postId + ', \'bold\')" title="Bold" class="toolbar-btn" style="padding: 0.25rem 0.5rem; font-weight: bold;">B</button>' +
-		'<button type="button" onclick="editFormatText(' + postId + ', \'italic\')" title="Italic" class="toolbar-btn" style="padding: 0.25rem 0.5rem; font-style: italic;">I</button>' +
-		'<button type="button" onclick="editFormatText(' + postId + ', \'underline\')" title="Underline" class="toolbar-btn" style="padding: 0.25rem 0.5rem; text-decoration: underline;">U</button>' +
-		'<button type="button" onclick="editFormatText(' + postId + ', \'blockquote\')" title="Quote" class="toolbar-btn" style="padding: 0.25rem 0.5rem;">&ldquo;</button>' +
-		'<button type="button" onclick="editInsertLink(' + postId + ')" title="Link" class="toolbar-btn" style="padding: 0.25rem 0.5rem;">' + linkSvg + '</button>' +
+		'<div class="edit-toolbar">' +
+		'<button type="button" onclick="editFormatText(' + postId + ', \'bold\')" title="Bold" class="toolbar-btn" data-format="bold">B</button>' +
+		'<button type="button" onclick="editFormatText(' + postId + ', \'italic\')" title="Italic" class="toolbar-btn" data-format="italic">I</button>' +
+		'<button type="button" onclick="editFormatText(' + postId + ', \'underline\')" title="Underline" class="toolbar-btn" data-format="underline">U</button>' +
+		'<button type="button" onclick="editFormatText(' + postId + ', \'blockquote\')" title="Quote" class="toolbar-btn">&ldquo;</button>' +
+		'<button type="button" onclick="editInsertLink(' + postId + ')" title="Link" class="toolbar-btn">' + linkSvg + '</button>' +
 		'</div>' +
-		'<div id="edit-editor-' + postId + '" contenteditable="true" placeholder="Post text here..." style="border: 1px solid var(--color-border); border-radius: 0 0 0.375rem 0.375rem; padding: 0.5rem; min-height: 100px; background: var(--color-background);">' + currentText + '</div>';
+		'<div id="edit-editor-' + postId + '" class="edit-editor" contenteditable="true" placeholder="Post text here...">' + currentText + '</div>';
 
 	if (hasImage) {
 		html +=
-			'<div style="margin: 0.5rem 0;">' +
-			'<img src="' + currentImage + '" alt="Current image" style="max-width: 100%; height: auto; border-radius: 0.375rem; max-height: 200px;">' +
-			'<label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; cursor: pointer;">' +
-			'<input type="checkbox" id="remove-image-' + postId + '" style="width: auto;"> Remove image' +
+			'<div class="edit-image-preview">' +
+			'<img src="' + currentImage + '" alt="Current image">' +
+			'<label class="edit-remove-image">' +
+			'<input type="checkbox" id="remove-image-' + postId + '"> Remove image' +
 			'</label></div>';
 	}
 
 	html +=
-		'<label style="margin-top: 0.5rem;">' +
+		'<label>' +
 		(hasImage ? 'Replace' : 'Add') + ' picture (optional)' +
 		'<input type="file" id="edit-image-' + postId + '" accept="image/*">' +
 		'</label>' +
-		'<div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">' +
-		'<button type="button" class="secondary outline" style="padding: 0.25rem 0.75rem;" onclick="cancelEditPost(' + postId + ')">Cancel</button>' +
-		'<button type="button" class="secondary outline delete" style="padding: 0.25rem 0.75rem;" onclick="deletePost(' + postId + ')">Delete</button>' +
-		'<button type="button" style="padding: 0.25rem 0.75rem;" onclick="submitEditPost(' + postId + ')">Save</button>' +
+		'<div class="edit-actions">' +
+		'<button type="button" class="secondary outline" onclick="cancelEditPost(' + postId + ')">Cancel</button>' +
+		'<button type="button" class="secondary outline delete" onclick="deletePost(' + postId + ')">Delete</button>' +
+		'<button type="button" onclick="submitEditPost(' + postId + ')">Save</button>' +
 		'</div></form>';
 
 	card.innerHTML = html;
 
-	// Attach blockquote handling to the new edit editor
 	var editEditor = document.getElementById('edit-editor-' + postId);
 	if (editEditor) {
 		attachBlockquoteHandling(editEditor);
