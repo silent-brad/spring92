@@ -1,8 +1,9 @@
 import prologue
-import std/[options, strutils]
+import std/[options, strutils, hashes]
 import common
+import checksums/sha1
 import ../database/[models, families]
-import ../types, ../auth, ../templates, ../utils
+import ../types, ../templates, ../utils
 
 proc index_page*(ctx: Context) {.async.} = gc_safe:
   html_resp(ctx, render_template("index.jinja", get_session(ctx)))
@@ -28,7 +29,7 @@ proc do_login*(ctx: Context) {.async.} = gc_safe:
   if password == "": html_resp(ctx, error_div("Password is required")); return
   if not validate_email(email): html_resp(ctx, error_div("Invalid email format")); return
   let family_opt = get_family_by_email(db_conn, email)
-  if family_opt.is_some and verify_password(password, family_opt.get().password_hash):
+  if family_opt.is_some and $secure_hash(password) == family_opt.get().password_hash:
     set_family_session(ctx, family_opt.get())
     hx_redirect(ctx, "/select-walker?success=login")
   else:
@@ -45,7 +46,7 @@ proc do_signup*(ctx: Context) {.async.} = gc_safe:
   if passkey != PASSKEY: html_resp(ctx, error_div("Invalid passkey")); return
   if get_family_by_email(db_conn, email).is_some: html_resp(ctx, error_div("Email already registered")); return
   try:
-    let family_id = create_family_account(db_conn, email, hash_password(password))
+    let family_id = create_family_account(db_conn, email, $secure_hash(password))
     set_family_session(ctx, Family(id: family_id, email: email))
     hx_redirect(ctx, "/add-walker?success=signup")
   except Exception as e:

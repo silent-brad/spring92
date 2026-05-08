@@ -1,8 +1,9 @@
 import prologue
-import std/[options, strutils]
+import std/[options, strutils, hashes]
 import common
+import checksums/sha1
 import ../database/[models, walkers as db_walkers, families]
-import ../types, ../auth, ../templates, ../utils
+import ../types, ../templates, ../utils
 
 proc settings_page*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
@@ -33,8 +34,8 @@ proc do_settings*(ctx: Context) {.async.} = gc_safe:
     if new_pw.len < 8: html_resp(ctx, html_error("Password must be at least 8 characters")); return
     let fam = get_family_by_id(db_conn, session.get().family_id)
     if fam.is_none: html_resp(ctx, html_error("Family account not found")); return
-    if not verify_password(cur_pw, fam.get().password_hash):
+    if $secure_hash(cur_pw) != fam.get().password_hash:
       html_resp(ctx, html_error("Current password is incorrect")); return
-    try: update_family_password(db_conn, session.get().family_id, hash_password(new_pw))
+    try: update_family_password(db_conn, session.get().family_id, $secure_hash(new_pw))
     except: html_resp(ctx, html_error("Error updating password")); return
   hx_redirect(ctx, "/dashboard?success=settings")
