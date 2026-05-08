@@ -4,29 +4,29 @@
 .page-404 {
   text-align: center;
   padding: 4rem 0;
-}
 
-.page-404 h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
+  h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
 
-.page-404 h2 {
-  margin-bottom: 2rem;
-  color: var(--color-text-muted);
-}
+  h2 {
+    margin-bottom: 2rem;
+    color: var(--color-text-muted);
+  }
 
-.page-404 p {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-}
+  p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
 
-.page-404 .btn-group {
-  margin-top: 3rem;
-}
+  .btn-group {
+    margin-top: 3rem;
 
-.page-404 .btn-group a {
-  margin: 0 0.5rem;
+    a {
+      margin: 0 0.5rem;
+    }
+  }
 }
 
 /* About page */
@@ -169,8 +169,10 @@
 }
 
 /* Delete walker page */
-.delete-page h1 {
-  color: var(--error-oklch-500);
+.delete-page {
+  h1 {
+    color: var(--error-oklch-500);
+  }
 }
 
 .delete-form {
