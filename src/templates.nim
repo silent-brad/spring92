@@ -1,48 +1,102 @@
 import options
 import nimja/parser
 import os
+import std/macros
 import types, utils
 import database/models
 
 const base_dir = get_script_dir() & "/../templates/"
 
-proc render_template*(template_name: static string, session: Option[SessionData] = none(SessionData),
-    error_message: Option[string] = none(string), success_message: Option[string] = none(string),
-    name: Option[string] = none(string), miles: Option[string] = none(string),
-    current_total: Option[float] = none(float), progress_percent: Option[float] = none(float),
-    walker_id: Option[int64] = none(int64), email: Option[string] = none(string),
-    entries_html: string = ""): string {.gcsafe.} =
-  compile_template_file(template_name, base_dir)
+macro opt_proc(p: untyped): untyped =
+  ## Rewrites `?Type` params into `Option[Type] = none(Type)`.
+  let proc_def = if p.kind == nnk_stmt_list: p[0] else: p
+  expect_kind(proc_def, {nnk_proc_def, nnk_func_def})
+  result = proc_def.copy_nim_tree()
+  for i in 1 ..< result[3].len:
+    let def = result[3][i]
+    if def.kind != nnk_ident_defs: continue
+    let t = def[^2]
+    if t.kind == nnk_prefix and t[0].eq_ident("?"):
+      let base = t[1]
+      def[^2] = nnk_bracket_expr.new_tree(ident"Option", base)
+      if def[^1].kind == nnk_empty:
+        def[^1] = new_call(ident"none", base)
 
-proc render_leaderboard*(session: Option[SessionData] = none(SessionData),
-    success_message: Option[string] = none(string),
-    user_stats: seq[Entry] = @[], has_more: bool = false,
-    next_page: int = 2, offset: int = 0, current_page: int = 1): string {.gcsafe.} =
-  compile_template_file("leaderboard.jinja", base_dir)
+macro define_renderer(name: untyped, tmpl: static string, body: untyped): untyped =
+  ## Generates a renderer proc from a colon-block param list.
+  ## Use `?Type` for optional params that default to `none(Type)`.
+  var formal_params = new_nim_node(nnk_formal_params)
+  formal_params.add ident"string"
+  for param in body:
+    let param_name = param[0]
+    let inner = param[1][0]
+    case inner.kind
+    of nnk_prefix:
+      let base = inner[1]
+      let opt_type = nnk_bracket_expr.new_tree(ident"Option", base)
+      formal_params.add new_ident_defs(param_name, opt_type, new_call(ident"none", base))
+    of nnk_asgn:
+      formal_params.add new_ident_defs(param_name, inner[0], inner[1])
+    else:
+      formal_params.add new_ident_defs(param_name, inner)
+  let proc_name = postfix(name, "*")
+  let base_dir = ident"base_dir"
+  let proc_body = quote do:
+    compile_template_file(`tmpl`, `baseDir`)
+  result = new_proc(proc_name, body = proc_body)
+  result[3] = formal_params
+  result.add_pragma(ident"gcsafe")
 
-proc render_leaderboard_table*(user_stats: seq[Entry] = @[],
-    has_more: bool = false, next_page: int = 2, offset: int = 0,
-    current_page: int = 1): string {.gcsafe.} =
-  compile_template_file("leaderboard_table.jinja", base_dir)
+opt_proc:
+  proc render_template*(template_name: static string,
+      session: ?SessionData, error_message: ?string, success_message: ?string,
+      name: ?string, miles: ?string,
+      current_total: ?float, progress_percent: ?float,
+      walker_id: ?int64, email: ?string,
+      entries_html: string = ""): string {.gcsafe.} =
+    compile_template_file(template_name, base_dir)
 
-proc render_settings*(walker: Option[Walker], session: Option[SessionData] = none(SessionData),
-    error_message: Option[string] = none(string),
-    success_message: Option[string] = none(string)): string {.gcsafe.} =
-  compile_template_file("settings.jinja", base_dir)
+define_renderer render_leaderboard, "leaderboard.jinja":
+  session: ?SessionData
+  success_message: ?string
+  user_stats: seq[Entry] = @[]
+  has_more: bool = false
+  next_page: int = 2
+  offset: int = 0
+  current_page: int = 1
 
-proc render_posts_page*(posts: seq[PostView], session: Option[SessionData] = none(SessionData),
-    has_more: bool = false, next_page: int = 2): string {.gcsafe.} =
-  compile_template_file("posts.jinja", base_dir)
+define_renderer render_leaderboard_table, "leaderboard_table.jinja":
+  user_stats: seq[Entry] = @[]
+  has_more: bool = false
+  next_page: int = 2
+  offset: int = 0
+  current_page: int = 1
 
-proc render_post_feed*(posts: seq[PostView], has_more: bool = false,
-    next_page: int = 2, session: Option[SessionData] = none(SessionData)): string {.gcsafe.} =
-  compile_template_file("post_feed.jinja", base_dir)
+define_renderer render_settings, "settings.jinja":
+  walker: ?Walker
+  session: ?SessionData
+  error_message: ?string
+  success_message: ?string
 
-proc render_mile_entries_table*(entries: seq[MileEntry], has_more: bool = false,
-    next_page: int = 2): string {.gcsafe.} =
-  compile_template_file("mile_entries_table.jinja", base_dir)
+define_renderer render_posts_page, "posts.jinja":
+  posts: seq[Post]
+  session: ?SessionData
+  has_more: bool = false
+  next_page: int = 2
 
-proc render_walker_selection*(walkers: seq[Walker], session: Option[SessionData] = none(SessionData),
-    success_message: Option[string] = none(string),
-    error_message: Option[string] = none(string)): string {.gcsafe.} =
-  compile_template_file("select-walker.jinja", base_dir)
+define_renderer render_post_feed, "post_feed.jinja":
+  posts: seq[Post]
+  has_more: bool = false
+  next_page: int = 2
+  session: ?SessionData
+
+define_renderer render_mile_entries_table, "mile_entries_table.jinja":
+  entries: seq[MileEntry]
+  has_more: bool = false
+  next_page: int = 2
+
+define_renderer render_walker_selection, "select-walker.jinja":
+  walkers: seq[Walker]
+  session: ?SessionData
+  success_message: ?string
+  error_message: ?string

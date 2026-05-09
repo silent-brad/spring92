@@ -1,6 +1,6 @@
 import prologue
 import std/[options, strutils, json, os]
-import db_connector/db_sqlite
+import norm/sqlite
 import ../database/models
 import ../types, ../utils, ../upload
 

@@ -10,9 +10,10 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        buildNimPackage = pkgs.buildNimPackage.override { nim2 = pkgs.nim-2_0; };
       in
       {
-        packages.default = pkgs.buildNimPackage {
+        packages.default = buildNimPackage {
           pname = "spring92";
           version = "0.2.0";
           src = ./.;
@@ -25,8 +26,6 @@
             "--mm:orc"
           ];
           buildInputs = with pkgs; [
-            nim-2_0
-            nimble
             sqlite
             openssl
             imagemagick

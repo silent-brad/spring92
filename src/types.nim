@@ -1,5 +1,5 @@
 import database/models
-export Walker, Family, MileEntry
+export Walker, Family, MileEntry, Post
 
 type
   SessionData* = object
@@ -14,15 +14,6 @@ type
     walker*: Walker
     total_miles*: float
     progress_percent*: float
-
-  PostView* = object
-    id*: int64
-    walker_id*: int64
-    name*: string
-    avatar_filename*: string
-    text_content*: string
-    image_filename*: string
-    created_at*: string
 
 const
   static_dir* = "static"

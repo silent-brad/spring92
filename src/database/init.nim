@@ -1,35 +1,20 @@
-import db_connector/db_sqlite
+import norm/sqlite
+from db_connector/db_sqlite as rawdb import nil
+import models
+export sqlite.DbConn
 
 proc init_database*(): DbConn =
   let db = open("spring92.db", "", "", "")
-  db.exec(sql"""CREATE TABLE IF NOT EXISTS family (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    created_at DATETIME DEFAULT (DATETIME('now', 'localtime'))
-  )""")
-  db.exec(sql"""CREATE TABLE IF NOT EXISTS walker (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    family_id INTEGER NOT NULL,
-    name TEXT NOT NULL,
-    has_custom_avatar BOOLEAN DEFAULT FALSE,
-    avatar_filename TEXT,
-    created_at DATETIME DEFAULT (DATETIME('now', 'localtime')),
-    FOREIGN KEY (family_id) REFERENCES family (id)
-  )""")
-  db.exec(sql"""CREATE TABLE IF NOT EXISTS mile_entry (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    walker_id INTEGER NOT NULL,
-    miles REAL NOT NULL,
-    logged_at DATETIME DEFAULT (DATETIME('now', 'localtime')),
-    FOREIGN KEY (walker_id) REFERENCES walker (id)
-  )""")
-  db.exec(sql"""CREATE TABLE IF NOT EXISTS post (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    walker_id INTEGER,
-    text_content TEXT NOT NULL,
-    image_filename TEXT,
-    created_at DATETIME DEFAULT (DATETIME('now', 'localtime')),
-    FOREIGN KEY (walker_id) REFERENCES walker (id)
-  )""")
-  return db
+  db.exec(sql"PRAGMA foreign_keys = ON")
+
+  # Migrate: rename post.walker_id → post.walker for NORM FK
+  for row in rawdb.get_all_rows(db, rawdb.sql"PRAGMA table_info(post)"):
+    if row[1] == "walker_id":
+      rawdb.exec(db, rawdb.sql"ALTER TABLE post RENAME COLUMN walker_id TO walker")
+      break
+
+  db.create_tables(new_family())
+  db.create_tables(new_walker())
+  db.create_tables(new_mile_entry())
+  db.create_tables(new_post())
+  db

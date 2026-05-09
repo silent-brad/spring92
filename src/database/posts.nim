@@ -1,24 +1,32 @@
-import db_connector/db_sqlite
-import strutils
-import ../types
+import norm/sqlite
+import std/strutils
+import models
 
 proc create_post*(db: DbConn, walker_id: int64, text_content, image_filename: string): int64 =
-  db.insert_id(sql"INSERT INTO post (walker_id, text_content, image_filename) VALUES (?, ?, ?)", walker_id, text_content, image_filename)
+  var walker = new_walker()
+  db.select(walker, "id = ?", walker_id)
+  var post = new_post(walker, text_content, image_filename)
+  db.insert(post)
+  post.id
 
-proc to_post_view(row: Row): PostView =
-  PostView(id: parse_biggest_int(row[0]), walker_id: parse_biggest_int(row[1]),
-           name: row[2], avatar_filename: row[3], text_content: row[4],
-           image_filename: row[5], created_at: row[6])
+proc get_posts_paginated*(db: DbConn, limit, offset: int): seq[Post] =
+  var posts = @[new_post()]
+  db.select(posts, "1 = 1 ORDER BY \"post\".created_at DESC LIMIT ? OFFSET ?", limit, offset)
+  posts
 
-proc get_posts_paginated*(db: DbConn, limit, offset: int): seq[PostView] =
-  for row in db.get_all_rows(sql"""SELECT p.id, p.walker_id, u.name, u.avatar_filename, p.text_content, p.image_filename, p.created_at FROM post p JOIN walker u ON p.walker_id = u.id ORDER BY p.created_at DESC LIMIT ? OFFSET ?""", limit, offset):
-    result.add(to_post_view(row))
-
-proc get_post_by_id*(db: DbConn, post_id: int64): PostView =
-  to_post_view(db.get_row(sql"""SELECT p.id, p.walker_id, u.name, u.avatar_filename, p.text_content, p.image_filename, p.created_at FROM post p JOIN walker u ON p.walker_id = u.id WHERE p.id = ?""", post_id))
+proc get_post_by_id*(db: DbConn, post_id: int64): Post =
+  var post = new_post()
+  db.select(post, "\"post\".id = ?", post_id)
+  post
 
 proc update_post*(db: DbConn, post_id: int64, text_content, image_filename: string) =
-  db.exec(sql"UPDATE post SET text_content = ?, image_filename = ? WHERE id = ?", text_content, image_filename, post_id)
+  var post = new_post()
+  db.select(post, "\"post\".id = ?", post_id)
+  post.text_content = text_content
+  post.image_filename = image_filename
+  db.update(post)
 
 proc delete_post*(db: DbConn, post_id: int64) =
-  db.exec(sql"DELETE FROM post WHERE id = ?", post_id)
+  var post = new_post()
+  post.id = post_id
+  db.delete(post)

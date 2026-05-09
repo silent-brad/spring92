@@ -33,7 +33,7 @@ proc do_edit_post*(ctx: Context) {.async.} = gc_safe:
   try:
     let post_id = parse_biggest_int(ctx.get_form_params("post_id"))
     let post = get_post_by_id(db_conn, post_id)
-    if post.walker_id != session.get().walker_id:
+    if post.walker.id != session.get().walker_id:
       html_resp(ctx, html_error("You can only edit your own posts"), Http403); return
     let text_content = sanitize_html(ctx.get_form_params("text_content").strip())
     var image_filename = post.image_filename
@@ -57,7 +57,7 @@ proc do_delete_post*(ctx: Context) {.async.} = gc_safe:
   try:
     let post_id = parse_biggest_int(ctx.get_post_params("post_id"))
     let post = get_post_by_id(db_conn, post_id)
-    if post.walker_id != session.get().walker_id:
+    if post.walker.id != session.get().walker_id:
       html_resp(ctx, html_error("You can only delete your own posts"), Http403); return
     if post.image_filename != "" and file_exists("pictures" / post.image_filename): remove_file("pictures" / post.image_filename)
     delete_post(db_conn, post_id)
