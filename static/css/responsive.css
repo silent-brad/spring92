@@ -239,6 +239,7 @@
 
   .landing {
     height: calc(100vh - 4rem - 60px);
+    top: 4rem;
   }
 
   .landing-content {
@@ -281,11 +282,11 @@
   }
 
   .landing {
-    height: calc(100vh - 6rem - 50px);
+    height: calc(100vh - 4rem - 50px);
   }
 
   .landing-content {
-    height: calc(100vh - 6rem - 50px);
+    height: calc(100vh - 4rem - 50px);
 
     h1 {
       font-size: var(--font-size-xl);
