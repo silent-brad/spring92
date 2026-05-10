@@ -1,5 +1,8 @@
 import norm/[model, pragmas]
-import std/macros
+import std/[macros, times]
+
+proc now_local*(): string =
+  now().format("yyyy-MM-dd HH:mm:ss")
 
 type
   Family* {.table_name: "family".} = ref object of Model

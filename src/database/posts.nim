@@ -5,7 +5,7 @@ import models
 proc create_post*(db: DbConn, walker_id: int64, text_content, image_filename: string): int64 =
   var walker = new_walker()
   db.select(walker, "id = ?", walker_id)
-  var post = new_post(walker, text_content, image_filename)
+  var post = new_post(walker, text_content, image_filename, now_local())
   db.insert(post)
   post.id
 

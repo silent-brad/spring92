@@ -25,7 +25,7 @@ proc create_generic_avatar(name: string): string =
 
 proc create_walker_account*(db: DbConn, family_id: int64, name: string): (int64, string) =
   let avatar_filename = create_generic_avatar(name)
-  var walker = new_walker(family_id, name, false, avatar_filename)
+  var walker = new_walker(family_id, name, false, avatar_filename, now_local())
   db.insert(walker)
   (walker.id, avatar_filename)
 

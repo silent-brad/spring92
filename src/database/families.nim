@@ -19,7 +19,7 @@ proc get_family_by_id*(db: DbConn, family_id: int64): Option[Family] =
     none(Family)
 
 proc create_family_account*(db: DbConn, email, password_hash: string): int64 =
-  var family = new_family(email, password_hash)
+  var family = new_family(email, password_hash, now_local())
   db.insert(family)
   family.id
 

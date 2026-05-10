@@ -4,7 +4,7 @@ import std/strutils
 import models
 
 proc log_miles*(db: DbConn, walker_id: int64, miles: float) =
-  var entry = new_mile_entry(walker_id, miles)
+  var entry = new_mile_entry(walker_id, miles, now_local())
   db.insert(entry)
 
 proc get_user_total_miles*(db: DbConn, walker_id: int64): float =
