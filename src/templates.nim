@@ -53,7 +53,8 @@ opt_proc:
       name: ?string, miles: ?string,
       current_total: ?float, progress_percent: ?float,
       walker_id: ?int64, email: ?string,
-      entries_html: string = ""): string {.gcsafe.} =
+      entries_html: string = "",
+      chart_html: string = ""): string {.gcsafe.} =
     compile_template_file(template_name, base_dir)
 
 define_renderer render_leaderboard, "leaderboard.jinja":

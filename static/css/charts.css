@@ -1,0 +1,107 @@
+/* SVG Miles Chart */
+.chart-container {
+  width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+.miles-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Gridlines */
+.chart-grid {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+
+/* Labels */
+.chart-label {
+  fill: rgba(255, 255, 255, 0.5);
+}
+
+.chart-label-tick {
+  font-size: 9px;
+}
+
+.chart-label-axis {
+  font-size: 9px;
+}
+
+.chart-label-date {
+  font-size: 8px;
+}
+
+/* Fill area under line */
+.chart-fill {
+  fill: rgba(59, 130, 246, 0.1);
+  stroke: none;
+}
+
+/* Data line */
+.chart-line {
+  fill: none;
+  stroke: #F8F59B;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+/* Data points */
+.chart-hit-target {
+  fill: transparent;
+}
+
+.chart-point {
+  fill: transparent;
+  stroke: #F8F59B;
+  stroke-width: 1.5;
+  transition: transform 0.15s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.chart-point-inner {
+  fill: #F8F59B;
+  transition: transform 0.15s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.chart-point-group:hover .chart-point,
+.chart-point-group:hover .chart-point-inner {
+  transform: scale(2);
+}
+
+.chart-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.3rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--color-text);
+  /*
+  background: var(--color-surface-variant);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);*/
+
+  /*opacity: 0;
+  transform: translate(-50%, -100%);*/
+  /*transition: var(--transition);*/
+  transition: opacity 0.12s ease;
+  background: linear-gradient(
+    -225deg,
+    oklch(from var(--primary-oklch-500) l c h / 0.5),
+    oklch(from var(--primary-oklch-400) l c h / 0.5)
+  );
+  box-shadow:
+    inset 0 -2px 0 0 oklch(from var(--primary-oklch-550) l c h / 0.4),
+    inset 0 0 1px 1px oklch(from var(--primary-oklch-450) l c h / 0.4),
+    0 1px 2px 1px oklch(from var(--primary-oklch-900) l c h / 0.4);
+  cursor: pointer;
+}

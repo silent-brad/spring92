@@ -41,6 +41,8 @@
 * DONE Add avatar/name to dashboard page
   CLOSED: [2026-05-04 Mon 22:11]
 * DONE Refactor package tooling
+* DONE Remove Chart.js and create SSR chart
+  CLOSED: [2026-05-12 Tue 16:48]
 * TODO Maybe make it not reload page on form submit
 
 * DONE Do complete server refactor

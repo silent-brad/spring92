@@ -30,7 +30,7 @@ proc register_routes*(app: var Prologue) =
   app.post("/delete-miles", do_delete_miles)
   app.get("/leaderboard", leaderboard_page)
   app.get("/api/leaderboard-table", api_leaderboard_table)
-  app.get("/api/user-miles-data", api_user_miles_data)
+  app.get("/api/user-miles-chart", api_user_miles_chart)
   app.get("/api/user-miles-entries", api_user_miles_entries)
 
   # Posts

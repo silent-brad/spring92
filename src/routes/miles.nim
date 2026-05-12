@@ -1,8 +1,8 @@
 import prologue
-import std/[options, strutils, strformat, json]
+import std/[options, strutils, strformat]
 import common
 import ../database/[models, miles as db_miles]
-import ../types, ../templates, ../utils
+import ../types, ../templates, ../utils, ../chart
 
 proc dashboard_page*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
@@ -18,9 +18,11 @@ proc dashboard_page*(ctx: Context) {.async.} = gc_safe:
   let has_more_entries = recent.len > ps
   let entries = if has_more_entries: recent[0 ..< ps] else: recent
   let entries_html = render_mile_entries_table(entries, has_more = has_more_entries, next_page = 2)
+  let chart_data = get_user_miles_by_date(db_conn, wid)
+  let chart_html = render_miles_chart(chart_data)
   html_resp(ctx, render_template("dashboard.jinja", session, success_message = msg,
             current_total = some(total), progress_percent = some(pct),
-            entries_html = entries_html))
+            entries_html = entries_html, chart_html = chart_html))
 
 proc log_page*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
@@ -97,16 +99,11 @@ proc api_leaderboard_table*(ctx: Context) {.async.} = gc_safe:
   html_resp(ctx, render_leaderboard_table(to_display_entries(display),
             has_more = has_more, next_page = page + 1, offset = offset, current_page = page))
 
-proc api_user_miles_data*(ctx: Context) {.async.} = gc_safe:
+proc api_user_miles_chart*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
   if session.is_none: return
   let data = get_user_miles_by_date(db_conn, session.get().walker_id)
-  var dates = new_j_array()
-  var miles_arr = new_j_array()
-  for entry in data:
-    dates.add(new_j_string(entry.date))
-    miles_arr.add(new_j_float(entry.miles))
-  json_resp(ctx, %*{"dates": dates, "miles": miles_arr})
+  html_resp(ctx, render_miles_chart(data))
 
 proc api_user_miles_entries*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)

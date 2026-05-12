@@ -83,9 +83,12 @@
 		<!-- Miles Graph -->
 		<div class="dashboard-card">
 			<h3>Miles Progress</h3>
-			<canvas id="milesChart" width="300" height="200"></canvas>
+			<div id="miles-chart" hx-get="/api/user-miles-chart" hx-trigger="miles-logged from:body" hx-swap="innerHTML">
+				{{chart_html}}
+			</div>
 		</div>
 	</div>
+
 	
 	<!-- Daily Miles List -->
 	<div class="activity-container">
@@ -114,147 +117,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="/static/js/chart.js"></script>
-<script>
-(function initDashboard() {
-
-if (typeof Chart === 'undefined') {
-	setTimeout(initDashboard, 50);
-	return;
-}
-
-function incrementMiles() {
-	const input = document.getElementById('miles');
-	const currentValue = parseFloat(input.value) || 0;
-	input.value = (currentValue + 0.5).toFixed(1);
-}
-
-function decrementMiles() {
-	const input = document.getElementById('miles');
-	const currentValue = parseFloat(input.value) || 0;
-	if (currentValue > 0.1) {
-		input.value = (currentValue - 0.5).toFixed(1);
-	}
-}
-
-window.incrementMiles = incrementMiles;
-window.decrementMiles = decrementMiles;
-
-// Chart setup
-const ctx = document.getElementById('milesChart').getContext('2d');
-
-const milesChart = new Chart(ctx, {
-	type: 'line',
-	data: {
-		labels: [],
-		datasets: [{
-			label: 'Daily Miles',
-			data: [],
-			borderColor: '#F8F59B',
-			backgroundColor: 'rgba(59, 130, 246, 0.1)',
-			tension: 0.1,
-			fill: true
-		}]
-	},
-	options: {
-	  responsive: false,
-	  scales: {
-		  y: {
-			  beginAtZero: true,
-			  title: {
-				  display: true,
-				  text: 'Miles'
-			  }
-		  },
-		  x: {
-			  title: {
-				  display: true,
-				  text: 'Date'
-			  }
-		  }
-	  },
-	},
-});
-
-function loadChartData() {
-	fetch('/api/user-miles-data')
-		.then(response => response.json())
-		.then(data => {
-			if (data.dates && data.miles) {
-				milesChart.data.labels = data.dates;
-				milesChart.data.datasets[0].data = data.miles;
-				milesChart.update();
-			}
-		})
-		.catch(error => {
-			console.error('Error loading chart data:', error);
-		});
-}
-
-function editMiles(entryId, currentMiles) {
-	const row = document.getElementById('entry-row-' + entryId);
-	if (!row) return;
-	const cells = row.querySelectorAll('td');
-	cells[1].innerHTML = `<input type="number" id="edit-miles-${entryId}" value="${currentMiles}" step="0.1" min="0.1" max="50" class="numbers edit-miles-input">`;
-	cells[2].innerHTML = `
-		<div class="edit-form">
-			<button class="secondary outline save-btn" onclick="submitEditMiles(${entryId})">Save</button>
-			<button class="secondary outline delete-btn-inline" onclick="deleteMiles(${entryId})">Delete</button>
-			<button class="secondary outline cancel-btn-inline" onclick="cancelEdit(${entryId}, ${currentMiles})">Cancel</button>
-		</div>`;
-}
-
-function cancelEdit(entryId, currentMiles) {
-	const row = document.getElementById('entry-row-' + entryId);
-	if (!row) return;
-	const cells = row.querySelectorAll('td');
-	cells[1].innerHTML = `<span class="miles-display-${entryId}">${currentMiles}</span>`;
-	cells[2].innerHTML = `<button class="secondary outline edit-btn" onclick="editMiles(${entryId}, ${currentMiles})">Edit</button>`;
-}
-
-function submitEditMiles(entryId) {
-	const miles = document.getElementById('edit-miles-' + entryId).value;
-	fetch('/edit-miles', {
-		method: 'POST',
-		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-		body: 'entry_id=' + entryId + '&miles=' + miles
-	}).then(r => r.text()).then(html => {
-		document.getElementById('edit-response').innerHTML = html;
-		setTimeout(() => { window.location.reload(); }, 1000);
-	});
-}
-
-function deleteMiles(entryId) {
-	if (!confirm('Delete this entry?')) return;
-	fetch('/delete-miles', {
-		method: 'POST',
-		headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-		body: 'entry_id=' + entryId
-	}).then(r => r.text()).then(html => {
-		document.getElementById('edit-response').innerHTML = html;
-		setTimeout(() => { window.location.reload(); }, 1000);
-	});
-}
-
-window.editMiles = editMiles;
-window.cancelEdit = cancelEdit;
-window.submitEditMiles = submitEditMiles;
-window.deleteMiles = deleteMiles;
-
-// Load chart data immediately (works for both initial load and boosted navigation)
-loadChartData();
-
-// Reload after successful mile logging
-const logResponse = document.getElementById('log-response');
-if (logResponse) {
-	const observer = new MutationObserver(function() {
-		if (logResponse.innerHTML.includes('successfully')) {
-			setTimeout(() => { window.location.reload(); }, 1000);
-		}
-	});
-	observer.observe(logResponse, { childList: true });
-}
-
-})();
-</script>
+<script src="/static/js/miles.js"></script>
 {% endblock %}
