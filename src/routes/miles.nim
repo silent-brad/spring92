@@ -73,7 +73,7 @@ proc do_delete_miles*(ctx: Context) {.async.} = gc_safe:
     html_resp(ctx, html_error("Invalid entry"))
 
 proc leaderboard_page*(ctx: Context) {.async.} = gc_safe:
-  let session = require_walker(ctx)
+  let session = require_login(ctx)
   if session.is_none: return
   var msg = none(string)
   if "success=signup" in ctx.request.query: msg = some("Welcome to Spring92!")
@@ -86,7 +86,7 @@ proc leaderboard_page*(ctx: Context) {.async.} = gc_safe:
             has_more = has_more, next_page = 2, offset = 0, current_page = 1))
 
 proc api_leaderboard_table*(ctx: Context) {.async.} = gc_safe:
-  let session = require_walker(ctx)
+  let session = require_login(ctx)
   if session.is_none: return
   const ps = 15
   var page = 1
@@ -106,7 +106,7 @@ proc api_user_miles_chart*(ctx: Context) {.async.} = gc_safe:
   html_resp(ctx, render_miles_chart(data))
 
 proc api_walker_chart*(ctx: Context) {.async.} = gc_safe:
-  let session = require_walker(ctx)
+  let session = require_login(ctx)
   if session.is_none: return
   try:
     let wid = parse_biggest_int(ctx.get_path_params("id"))

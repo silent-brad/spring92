@@ -10,7 +10,9 @@
 	</section>
 
 	<!-- Create Post Form -->
+	{% if session.is_some() and not session.get().is_family_session %}
 	{% importnimja "partials/_wysiwyg_editor.jinja" %}
+	{% endif %}
 
 	<!-- Post Feed -->
 	<div class="post-feed-container">

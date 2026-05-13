@@ -5,7 +5,7 @@ import ../database/[posts as db_posts]
 import ../types, ../templates, ../utils
 
 proc posts_page*(ctx: Context) {.async.} = gc_safe:
-  let session = require_walker(ctx)
+  let session = require_login(ctx)
   if session.is_none: return
   const ps = 10
   let all_posts = get_posts_paginated(db_conn, ps + 1, 0)
@@ -66,7 +66,7 @@ proc do_delete_post*(ctx: Context) {.async.} = gc_safe:
     html_resp(ctx, html_error("Invalid post"))
 
 proc api_post_feed*(ctx: Context) {.async.} = gc_safe:
-  let session = require_walker(ctx)
+  let session = require_login(ctx)
   if session.is_none: return
   const ps = 10
   var page = 1

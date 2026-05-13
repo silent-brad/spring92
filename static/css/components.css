@@ -286,6 +286,16 @@ li {
   border-radius: var(--radius);
 }
 
+@media (prefers-color-scheme: dark) {
+  .progress-bar {
+    background-color: var(--neutral-oklch-600);
+  }
+}
+
+[data-theme="dark"] .progress-bar {
+  background-color: var(--neutral-oklch-600);
+}
+
 /* Messages */
 .message,
 .error,

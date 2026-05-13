@@ -31,7 +31,7 @@ proc do_login*(ctx: Context) {.async.} = gc_safe:
   let family_opt = get_family_by_email(db_conn, email)
   if family_opt.is_some and $secure_hash(password) == family_opt.get().password_hash:
     set_family_session(ctx, family_opt.get())
-    hx_redirect(ctx, "/select-walker?success=login")
+    hx_redirect(ctx, "/leaderboard?success=login")
   else:
     html_resp(ctx, error_div("Invalid email or password"))
 
