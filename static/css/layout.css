@@ -83,7 +83,7 @@ a svg {
     font-family: Larken;
     text-decoration: none;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
 
     img {
       width: 4rem;

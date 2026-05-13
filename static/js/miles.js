@@ -65,7 +65,7 @@ function deleteMiles(entryId) {
     });
 }
 
-// Chart tooltips — attach directly to each point group (mouseenter doesn't bubble)
+// Chart tooltips — attach directly to each point group
 function initChartTooltips() {
   var container = document.querySelector('#miles-chart .chart-container');
   if (!container) return;
@@ -73,35 +73,48 @@ function initChartTooltips() {
   if (!tip) return;
   var svg = container.querySelector('svg');
   if (!svg) return;
+
+  function showTip(g) {
+    var circle = g.querySelector('.chart-hit-target');
+    var pt = svg.createSVGPoint();
+    pt.x = parseFloat(circle.getAttribute('cx'));
+    pt.y = parseFloat(circle.getAttribute('cy'));
+    var screenPt = pt.matrixTransform(svg.getScreenCTM());
+    var cr = container.getBoundingClientRect();
+    tip.textContent = g.getAttribute('data-tooltip');
+    tip.style.display = 'block';
+    var tipW = tip.offsetWidth;
+    var tipH = tip.offsetHeight;
+    var left = screenPt.x - cr.left - tipW / 2;
+    var top = screenPt.y - cr.top - tipH - 8;
+    if (left < 0) left = 0;
+    if (left + tipW > cr.width) left = cr.width - tipW;
+    if (screenPt.y - tipH - 8 < cr.top) {
+      top = screenPt.y - cr.top + 8;
+    }
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+
+  function hideTip() {
+    tip.style.display = 'none';
+  }
+
   var groups = svg.querySelectorAll('.chart-point-group');
   groups.forEach(function(g) {
-    g.addEventListener('mouseenter', function() {
-      var circle = g.querySelector('.chart-hit-target');
-      var pt = svg.createSVGPoint();
-      pt.x = parseFloat(circle.getAttribute('cx'));
-      pt.y = parseFloat(circle.getAttribute('cy'));
-      var screenPt = pt.matrixTransform(svg.getScreenCTM());
-      var cr = container.getBoundingClientRect();
-      tip.textContent = g.getAttribute('data-tooltip');
-      tip.style.display = 'block';
-      // Position centered above the point
-      var tipW = tip.offsetWidth;
-      var tipH = tip.offsetHeight;
-      var left = screenPt.x - cr.left - tipW / 2;
-      var top = screenPt.y - cr.top - tipH - 8;
-      // Clamp horizontally
-      if (left < 0) left = 0;
-      if (left + tipW > cr.width) left = cr.width - tipW;
-      // Flip below if above viewport
-      if (screenPt.y - tipH - 8 < cr.top) {
-        top = screenPt.y - cr.top + 8;
-      }
-      tip.style.left = left + 'px';
-      tip.style.top = top + 'px';
-    });
-    g.addEventListener('mouseleave', function() {
-      tip.style.display = 'none';
-    });
+    g.addEventListener('mouseenter', function() { showTip(g); });
+    g.addEventListener('mouseleave', hideTip);
+    g.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      showTip(g);
+    }, { passive: false });
+  });
+
+  // Hide tooltip when tapping outside a point
+  document.addEventListener('touchstart', function(e) {
+    if (!e.target.closest('.chart-point-group')) {
+      hideTip();
+    }
   });
 }
 

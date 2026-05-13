@@ -33,7 +33,7 @@
 	
 	<!-- Progress Overview -->
 	{% if current_total.is_some() %}
-		<div class="progress-overview">
+		<div class="card progress-overview">
 			<h2>Your Progress</h2>
 			<h3 class="numbers progress-num">{{fmtMiles(current_total.get())}}</h3>
 			<p class="numbers progress-num-label">out of 92 miles</p>
@@ -49,7 +49,7 @@
 	
 	<div class="dashboard-grid">
 		<!-- Log Miles Form -->
-		<div class="dashboard-card">
+		<div class="card dashboard-card">
 			<h3>Log Miles</h3>
 			<form hx-post="/log" hx-target="#log-response" hx-swap="innerHTML" hx-select="unset">
 				<label for="miles">
@@ -81,7 +81,7 @@
 		</div>
 		
 		<!-- Miles Graph -->
-		<div class="dashboard-card">
+		<div class="card dashboard-card">
 			<h3>Miles Progress</h3>
 			<div id="miles-chart" hx-get="/api/user-miles-chart" hx-trigger="miles-logged from:body" hx-swap="innerHTML">
 				{{chart_html}}
@@ -91,7 +91,7 @@
 
 	
 	<!-- Daily Miles List -->
-	<div class="activity-container">
+	<div class="card activity-container">
 		<h3>Recent Activity</h3>
 		<div id="daily-miles-list" class="numbers">
 			{% if entries_html.len() > 0 %}

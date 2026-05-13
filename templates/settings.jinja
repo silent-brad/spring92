@@ -23,7 +23,9 @@
 	{% endif %}
   </div>
 	
-	<form enctype="multipart/form-data"
+	<form
+    class="settings-form"
+    enctype="multipart/form-data"
 		hx-post="/settings"
 		hx-target="#settings-messages"
 		hx-swap="innerHTML"
@@ -63,7 +65,7 @@
 		</label>
 		
 		<fieldset>
-			<legend>Change Password (for family account)</legend>
+			<legend>Change Password</legend>
 			
 			<label for="current_password">
 				Current Password

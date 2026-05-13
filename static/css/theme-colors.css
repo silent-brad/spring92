@@ -143,9 +143,9 @@
 /* Dark mode theme */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-background: var(--neutral-oklch-900);
-    --color-surface: var(--neutral-oklch-800);
-    --color-surface-variant: var(--neutral-oklch-700);
+    --color-background: var(--neutral-oklch-800);
+    --color-surface: var(--neutral-oklch-700);
+    --color-surface-variant: var(--neutral-oklch-600);
     --color-text: var(--neutral-oklch-100);
     --color-text-secondary: var(--secondary-oklch-300);
     --color-text-muted: var(--neutral-oklch-500);
