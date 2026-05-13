@@ -2,10 +2,17 @@
 	{% let walker = user_stat.walker %}
 	<tr>
 		<td class="numbers">{{offset + rank + 1}}</td>
-		<td>
+		<td class="walker-cell">
 			{% let name = walker.name %}
 			{% let avatar_filename = walker.avatar_filename %}
 			{% importnimja "partials/_walker_avatar.jinja" %}
+			<div class="walker-chart-popover"
+				data-walker-id="{{walker.id}}"
+				data-walker-name="{{walker.name}}"
+				data-walker-avatar="/avatars/{{walker.avatar_filename}}"
+				data-walker-miles="{{fmtMiles(user_stat.total_miles)}}"
+				data-walker-pct="{{user_stat.progress_percent.int}}"
+			></div>
 		</td>
 		<td><strong class="numbers">{{fmtMiles(user_stat.total_miles)}}</strong></td>
 		<td>

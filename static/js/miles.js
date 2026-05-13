@@ -66,13 +66,14 @@ function deleteMiles(entryId) {
 }
 
 // Chart tooltips — attach directly to each point group
-function initChartTooltips() {
-  var container = document.querySelector('#miles-chart .chart-container');
+function initChartTooltipsIn(container) {
   if (!container) return;
   var tip = container.querySelector('.chart-tooltip');
   if (!tip) return;
   var svg = container.querySelector('svg');
   if (!svg) return;
+  if (container.dataset.tooltipsInit) return;
+  container.dataset.tooltipsInit = '1';
 
   function showTip(g) {
     var circle = g.querySelector('.chart-hit-target');
@@ -100,8 +101,7 @@ function initChartTooltips() {
     tip.style.display = 'none';
   }
 
-  var groups = svg.querySelectorAll('.chart-point-group');
-  groups.forEach(function(g) {
+  svg.querySelectorAll('.chart-point-group').forEach(function(g) {
     g.addEventListener('mouseenter', function() { showTip(g); });
     g.addEventListener('mouseleave', hideTip);
     g.addEventListener('touchstart', function(e) {
@@ -109,19 +109,16 @@ function initChartTooltips() {
       showTip(g);
     }, { passive: false });
   });
+}
 
-  // Hide tooltip when tapping outside a point
-  document.addEventListener('touchstart', function(e) {
-    if (!e.target.closest('.chart-point-group')) {
-      hideTip();
-    }
-  });
+function initChartTooltips(root) {
+  (root || document).querySelectorAll('.chart-container').forEach(initChartTooltipsIn);
 }
 
 initChartTooltips();
 document.body.addEventListener('htmx:afterSwap', function(e) {
   if (e.detail.target && e.detail.target.id === 'miles-chart') {
-    initChartTooltips();
+    initChartTooltips(e.detail.target);
   }
 });
 

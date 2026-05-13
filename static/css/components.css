@@ -71,6 +71,7 @@ select {
   padding: var(--space-lg);
   background-color: var(--color-surface);
   border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
   box-shadow: var(--shadow);
 
   h1,
@@ -522,10 +523,16 @@ button.avatar {
 
 .post-card {
   background-color: var(--color-surface);
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--color-border-light);
   &:hover {
     background-color: var(--color-surface-variant);
-    border: 2px solid var(--color-border-light);
+    border: 2px solid var(--color-border);
+  }
+  @media (prefers-color-scheme: dark) {
+    border: 2px solid var(--color-border);
+    &:hover {
+      border: 2px solid var(--color-border-light);
+    }
   }
 
   border-radius: var(--radius-lg);
@@ -783,9 +790,11 @@ button.avatar {
   table {
     display: table;
     white-space: normal;
-    border-radius: var(--radius);
+    border-collapse: separate;
+    border-spacing: 0;
     border: 2px solid var(--color-border);
-    overflow: hidden;
+    border-radius: var(--radius);
+    overflow: visible;
   }
 
   th:first-child,
@@ -795,12 +804,89 @@ button.avatar {
   }
 
   th:first-child {
-    border-top-left-radius: var(--radius);
+    border-top-left-radius: calc(var(--radius) - 2px);
   }
 
   th:last-child {
-    border-top-right-radius: var(--radius);
+    border-top-right-radius: calc(var(--radius) - 2px);
   }
+
+  tbody tr:last-child td:first-child {
+    border-bottom-left-radius: calc(var(--radius) - 2px);
+  }
+
+  tbody tr:last-child td:last-child {
+    border-bottom-right-radius: calc(var(--radius) - 2px);
+  }
+
+  td,
+  th {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+/* Walker chart popover */
+.walker-cell {
+  position: relative;
+  cursor: pointer;
+}
+
+.walker-chart-popover {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  z-index: 20;
+  width: 320px;
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.walker-chart-popover.flipped {
+  bottom: auto;
+  top: 100%;
+}
+
+.walker-chart-popover.visible {
+  display: block;
+}
+
+.popover-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  margin-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.popover-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.popover-info {
+  display: flex;
+  flex-direction: column;
+  line-height: var(--line-height-tight);
+}
+
+.popover-info strong {
+  font-size: var(--font-size-sm);
+}
+
+.popover-info small {
+  color: var(--color-text-muted);
 }
 
 #load-more-leaderboard {

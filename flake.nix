@@ -15,7 +15,7 @@
       {
         packages.default = buildNimPackage {
           pname = "spring92";
-          version = "0.2.0";
+          version = "0.3.0";
           src = ./.;
           # Run `nix shell nixpkgs#nim_lk -c nim_lk > lock.json` to generate lock file
           lockFile = ./lock.json;

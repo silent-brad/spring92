@@ -105,6 +105,16 @@ proc api_user_miles_chart*(ctx: Context) {.async.} = gc_safe:
   let data = get_user_miles_by_date(db_conn, session.get().walker_id)
   html_resp(ctx, render_miles_chart(data))
 
+proc api_walker_chart*(ctx: Context) {.async.} = gc_safe:
+  let session = require_walker(ctx)
+  if session.is_none: return
+  try:
+    let wid = parse_biggest_int(ctx.get_path_params("id"))
+    let data = get_user_miles_by_date(db_conn, wid)
+    html_resp(ctx, render_miles_chart(data))
+  except:
+    html_resp(ctx, "", Http404)
+
 proc api_user_miles_entries*(ctx: Context) {.async.} = gc_safe:
   let session = require_walker(ctx)
   if session.is_none: return

@@ -51,7 +51,8 @@
 * TODO Refactor image multipart?
 * TODO Make so that `/username` (like if name is "Brad White", profile url is "/brad-white") is the profile page and displays miles, description, stats, and has add miles if logged in. Make it so that when family account is logged in, you dont need to login to walker account unless to change settings/log miles/etc.
 * TODO Consider adding multithreading
-* TODO Switch `/static/css/..` to /css/..`
-* TODO Make hover tooltip for walker in leaderboard which displays chart
+* DONE Make hover tooltip for walker in leaderboard which displays chart
+  CLOSED: [2026-05-13 Wed 11:39]
 * TODO Add streak stats
 * TODO Add some animations with Rive
+* TODO Make notifications for new posts until viewed them! Maybe just have number icon by posts.

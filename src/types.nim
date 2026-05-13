@@ -17,4 +17,4 @@ type
 
 const
   static_dir* = "static"
-  port* = 8092
+  port* = 9006
