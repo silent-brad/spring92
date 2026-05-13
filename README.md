@@ -1,4 +1,4 @@
-# <img src="static/branding/logo.png" alt="Spring92 Logo" height="20em" width="20em" /> Spring92 Walking Challenge
+# <img src="static/branding/logo.png" alt="Spring92 Logo" height="28em" width="28em" /> Spring92 Walking Challenge
 
 > Note: this is originally a fork of my [Winter91 Challenge](https://github.com/silent-brad/winter91).
 

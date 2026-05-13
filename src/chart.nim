@@ -16,13 +16,9 @@ proc render_miles_chart*(data: MileDays): string =
   let chart_w = width - pad_left - pad_right
   let chart_h = height - pad_top - pad_bottom
 
-  if data.len == 0:
-    return fmt"""<div class="chart-container"><svg class="miles-chart-svg" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg"><text x="150" y="120" text-anchor="middle" class="chart-label" font-size="14">No data yet</text></svg></div>"""
-
-  # Build complete dataset from start_date to max_date with zero-filled gaps
+  # Build complete dataset from start_date to today with zero-filled gaps
   let start_date = parse(start_date_str, "yyyy-MM-dd")
-  let end_date_str = max(data.map_it(it.date))
-  let end_date = parse(end_date_str, "yyyy-MM-dd")
+  let end_date = now().format("yyyy-MM-dd").parse("yyyy-MM-dd")
   
   var plot_data: MileDays = @[]
   var current = start_date
